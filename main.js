@@ -103,7 +103,6 @@ function thock() {
         '  <span class="clih">USERS</span>   — List known users',
         '  <span class="clih">LOGIN</span>   — Authenticate (LOGIN &lt;user&gt;)',
         '  <span class="clih">CLEAR</span>   — Clear terminal',
-        '  <span class="clih">MANDEV</span>  — ???',
       ];
       if (loggedIn) {
         cmds.push('', '  <span class="clis">— SYSADMIN CLEARANCE GRANTED —</span>',
@@ -144,16 +143,7 @@ function thock() {
     },
     EGG: () => { location.href = 'egg.html'; return ['Navigating to Egg Laboratory...']; },
     WHOIS: () => { location.href = 'contact.html'; return ['Loading identity records...']; },
-    API: () => [
-      'REST API — dshaker.space',
-      '─────────────────────────',
-      '  <span class="clia">GET</span>  /api/egg/egg      — The Egg',
-      '  <span class="clia">GET</span>  /api/egg/coffee   — Coffee?',
-      '  <span class="clia">GET</span>  /api/egg/hack     — Elite Hack (matrix rain)',
-      '  <span class="clia">GET</span>  /api/egg/void     — The Void (binary transmission)',
-      '─────────────────────────',
-      '  <span class="clir">4 endpoints. More to come.</span>',
-    ],
+
     STATUS: () => [
       '<span class="clis">● ALL SYSTEMS NOMINAL</span>',
       '  uptime: ∞',
@@ -161,13 +151,7 @@ function thock() {
       '  vibes: immaculate',
     ],
     CLEAR: () => { out.innerHTML = ''; return []; },
-    MANDEV: () => [
-      '▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓',
-      '▓  ACCESS RESTRICTED         ▓',
-      '▓  clearance: INSUFFICIENT   ▓',
-      '▓  nice try though ;)        ▓',
-      '▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓',
-    ],
+
   };
 
   function appendLine(html) {
@@ -284,7 +268,7 @@ const _eggs = {
   '/api/egg/void':   () => {
     const msg = 'HOVER OVER EGG';
     const bin = [...msg].map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join('');
-    return { void: '◉', binary: bin, ascii: msg, message: bin };
+    return { void: '◉', binary: bin, message: bin };
   },
 };
 const _quotes = [
