@@ -51,6 +51,123 @@ function spawnStar() {
 }
 setInterval(spawnStar, 4000 + Math.random() * 6000);
 
+// Thocky click — Web Audio API mechanical keyboard sound
+let _actx = null;
+function thock() {
+  if (!_actx) _actx = new (window.AudioContext || window.webkitAudioContext)();
+  const now = _actx.currentTime;
+  // Low thump
+  const osc = _actx.createOscillator();
+  const g1 = _actx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(180, now);
+  osc.frequency.exponentialRampToValueAtTime(80, now + 0.04);
+  g1.gain.setValueAtTime(0.18, now);
+  g1.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+  osc.connect(g1).connect(_actx.destination);
+  osc.start(now); osc.stop(now + 0.05);
+  // Click snap
+  const buf = _actx.createBuffer(1, 200, _actx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < 200; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / 200, 12);
+  const noise = _actx.createBufferSource();
+  const g2 = _actx.createGain();
+  const filt = _actx.createBiquadFilter();
+  noise.buffer = buf;
+  filt.type = 'bandpass'; filt.frequency.value = 3000; filt.Q.value = 1.5;
+  g2.gain.setValueAtTime(0.12, now);
+  g2.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+  noise.connect(filt).connect(g2).connect(_actx.destination);
+  noise.start(now); noise.stop(now + 0.04);
+}
+
+// CLI Console
+(function() {
+  const cli = document.getElementById('cli');
+  const out = document.getElementById('cliOut');
+  const inp = document.getElementById('cliIn');
+  if (!cli || !inp) return;
+  const hist = [];
+  let hIdx = -1;
+
+  const CMDS = {
+    HELP: () => [
+      'Available commands:',
+      '  <span class="clih">EGG</span>     — Easter Egg Laboratory',
+      '  <span class="clih">WHOIS</span>   — Contact / identity',
+      '  <span class="clih">API</span>     — List hidden endpoints',
+      '  <span class="clih">STATUS</span>  — System status',
+      '  <span class="clih">CLEAR</span>   — Clear terminal',
+      '  <span class="clih">MANDEV</span>  — ???',
+    ],
+    EGG: () => { location.href = 'egg.html'; return ['Navigating to Egg Laboratory...']; },
+    WHOIS: () => { location.href = 'contact.html'; return ['Loading identity records...']; },
+    API: () => [
+      'REST API — dshaker.space',
+      '─────────────────────────',
+      '  <span class="clia">GET</span>  /api/egg/egg      — The Egg',
+      '  <span class="clia">GET</span>  /api/egg/coffee   — Coffee?',
+      '  <span class="clia">GET</span>  /api/egg/hack     — Elite Hack',
+      '  <span class="clia">GET</span>  /api/egg/void     — The Void',
+      '─────────────────────────',
+      '  <span class="clir">4 endpoints. More to come.</span>',
+    ],
+    STATUS: () => [
+      '<span class="clis">● ALL SYSTEMS NOMINAL</span>',
+      '  uptime: ∞',
+      '  stars: rendering',
+      '  vibes: immaculate',
+    ],
+    CLEAR: () => { out.innerHTML = ''; return []; },
+    MANDEV: () => [
+      '▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓',
+      '▓  ACCESS RESTRICTED         ▓',
+      '▓  clearance: INSUFFICIENT   ▓',
+      '▓  nice try though ;)        ▓',
+      '▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓',
+    ],
+  };
+
+  function appendLine(html) {
+    const d = document.createElement('div');
+    d.className = 'clil';
+    d.innerHTML = html;
+    out.appendChild(d);
+  }
+
+  function execCmd(raw) {
+    const cmd = raw.trim().toUpperCase();
+    if (!cmd) return;
+    hist.push(cmd);
+    hIdx = hist.length;
+    appendLine('sputnik@space:~$ ' + cmd);
+    if (CMDS[cmd]) {
+      const res = CMDS[cmd]();
+      res.forEach(l => appendLine(l));
+    } else {
+      appendLine('<span class="clie">command not found: ' + cmd + '</span>  — type <span class="clih">HELP</span>');
+    }
+    out.scrollTop = out.scrollHeight;
+  }
+
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { execCmd(inp.value); inp.value = ''; }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); if (hIdx > 0) { hIdx--; inp.value = hist[hIdx]; } }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); if (hIdx < hist.length - 1) { hIdx++; inp.value = hist[hIdx]; } else { hIdx = hist.length; inp.value = ''; } }
+    else if (e.key === 'l' && e.ctrlKey) { e.preventDefault(); out.innerHTML = ''; }
+  });
+
+  // Thock on each keystroke
+  inp.addEventListener('keydown', e => {
+    if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Enter') thock();
+  });
+
+  // Click anywhere in CLI to focus input
+  cli.addEventListener('click', () => inp.focus());
+  inp.addEventListener('focus', () => cli.classList.add('focus'));
+  inp.addEventListener('blur', () => cli.classList.remove('focus'));
+})();
+
 // Cursor glow
 const glow = document.getElementById('glow');
 document.addEventListener('mousemove', e => { glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px'; });
@@ -96,23 +213,38 @@ async function refreshDash() {
   setTimeout(() => btn.classList.remove('spin'), 800);
 }
 
-// Easter eggs
-const eggResponses = {};
-async function probeEgg(card, url) {
+// Easter eggs — hardcoded, no backend needed
+const _eggs = {
+  '/api/egg/egg':   { egg: '🥚', message: 'This is an egg.' },
+  '/api/egg/coffee': { coffee: 'void', message: 'No coffee. Only void.' },
+  '/api/egg/hack':   () => ({
+    matrix: Array.from({length: 128}, () => Math.random() < 0.5 ? '0' : '1').join(''),
+    message: 'Access granted. Just kidding.'
+  }),
+  '/api/egg/void':   { void: '◉', message: 'The void stares back.' },
+};
+const _quotes = [
+  "The universe is under no obligation to make sense to you. — Neil deGrasse Tyson",
+  "Somewhere, something incredible is waiting to be known. — Carl Sagan",
+  "We are all made of star stuff. — Carl Sagan",
+  "The cosmos is within us. We are a way for the universe to know itself. — Carl Sagan",
+  "Space is big. You just won't believe how vastly, hugely, mind-bogglingly big it is. — Douglas Adams",
+  "To confine our attention to terrestrial matters would be to limit the human spirit. — Stephen Hawking",
+];
+
+function probeEgg(card, url) {
   const term = document.getElementById('eterm');
-  const name = card.querySelector('.cn').textContent;
   const lines = [
     `<span class="tp">sputnik@space:~$ </span><span class="to">curl -s ${url}</span>`,
   ];
-  try {
-    const r = await fetch(url);
-    const d = await r.json();
+  const handler = _eggs[url];
+  if (handler) {
+    const d = typeof handler === 'function' ? handler() : handler;
     lines.push(`<span class="ts">${JSON.stringify(d, null, 2)}</span>`);
-  } catch (e) {
-    lines.push(`<span class="th">Connection refused. The void protects its secrets.</span>`);
+  } else {
+    lines.push(`<span class="th">404 — This egg has not been laid yet.</span>`);
   }
   lines.push(`<span class="tp">sputnik@space:~$ </span><span class="tc"></span>`);
-  // Remove old cursor
   const old = term.querySelector('.tc');
   if (old) old.parentElement.remove();
   lines.forEach(l => {
@@ -125,6 +257,122 @@ async function probeEgg(card, url) {
   card.classList.add('rev');
 }
 
+// Matrix rain — hack mode overlay
+(function() {
+  const cvs = document.getElementById('matrix');
+  if (!cvs) return;
+  const mctx = cvs.getContext('2d');
+  let cols = [], mraf = null, mActive = false;
+  const CHARS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF<>{}[]|/\\';
+  const FONT = 14;
+
+  function mResize() {
+    cvs.width = innerWidth; cvs.height = innerHeight;
+    cols = Array.from({length: Math.floor(cvs.width / FONT)}, (_, i) => ({
+      x: i * FONT, y: Math.random() * cvs.height, speed: 0.4 + Math.random() * 1.2
+    }));
+  }
+
+  function mDraw() {
+    if (!mActive) return;
+    mctx.fillStyle = 'rgba(0,0,0,0.06)';
+    mctx.fillRect(0, 0, cvs.width, cvs.height);
+    mctx.font = FONT + 'px monospace';
+    for (const c of cols) {
+      const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
+      mctx.fillStyle = Math.random() > 0.96 ? '#fff' : `hsl(120,100%,${35 + Math.random() * 30}%)`;
+      mctx.fillText(ch, c.x, c.y);
+      c.y += FONT * c.speed;
+      if (c.y > cvs.height && Math.random() > 0.98) {
+        c.y = 0;
+        c.speed = 0.4 + Math.random() * 1.2;
+      }
+    }
+    mraf = requestAnimationFrame(mDraw);
+  }
+
+  window.toggleHack = function() {
+    const btn = document.getElementById('hackBtn');
+    const starCvs = document.getElementById('starfield');
+    const nebs = document.querySelectorAll('.neb');
+    mActive = !mActive;
+    if (mActive) {
+      mResize();
+      cvs.style.display = 'block';
+      starCvs.style.opacity = '0';
+      nebs.forEach(n => n.style.opacity = '0');
+      btn.textContent = '🟢 DISMISS';
+      btn.classList.add('active');
+      mDraw();
+      addEventListener('resize', mResize);
+    } else {
+      cvs.style.display = 'none';
+      starCvs.style.opacity = '';
+      nebs.forEach(n => n.style.opacity = '');
+      btn.textContent = '黑客 HACK MODE';
+      btn.classList.remove('active');
+      cancelAnimationFrame(mraf);
+      mctx.clearRect(0, 0, cvs.width, cvs.height);
+      removeEventListener('resize', mResize);
+    }
+  };
+})();
+
+// Dial-up upload sequence
+const _modemLines = [
+  'ATDT dshaker.space',
+  'CONNECT 56000',
+  '--- Modem handshake ---',
+  'V.90 protocol detected',
+  'Remote host authenticated',
+  '--- Transferring ---',
+];
+function doDialUpload(file) {
+  const m = document.getElementById('uploadModal');
+  const ml = m.querySelector('.ml');
+  const sz = (file.size / 1024).toFixed(1);
+  ml.innerHTML = `
+    <h3>📡 Connecting...</h3>
+    <div class="diallog" id="dialLog"></div>
+    <div class="dprog">
+      <div class="dprogbar"><div class="dprogfill" id="dialFill"></div></div>
+      <div class="dprogstats"><span id="dialPct">0%</span><span id="dialSpd">0.0 KB/s</span><span id="dialRem">--:--</span></div>
+    </div>
+    <div class="dfile">📄 ${file.name} <span class="dfsz">${sz} KB</span></div>
+    <div class="dma"><button class="mb" onclick="closeUpload()">Cancel</button></div>`;
+  m.classList.add('act');
+  const log = document.getElementById('dialLog');
+  const fill = document.getElementById('dialFill');
+  const pct = document.getElementById('dialPct');
+  const spd = document.getElementById('dialSpd');
+  const rem = document.getElementById('dialRem');
+  let li = 0;
+  const iv = setInterval(() => {
+    if (li < _modemLines.length) {
+      log.innerHTML += `<div class="dll">${_modemLines[li++]}</div>`;
+      log.scrollTop = log.scrollHeight;
+    } else {
+      clearInterval(iv);
+      let p = 0;
+      const pi = setInterval(() => {
+        p += Math.random() * 18 + 5;
+        if (p > 100) p = 100;
+        fill.style.width = p + '%';
+        pct.textContent = Math.round(p) + '%';
+        spd.textContent = (Math.random() * 12 + 3).toFixed(1) + ' KB/s';
+        const sec = Math.max(0, Math.ceil((100 - p) / 12));
+        rem.textContent = '0:' + String(sec).padStart(2, '0');
+        if (p >= 100) {
+          clearInterval(pi);
+          log.innerHTML += '<div class="dll dlok">✓ Transfer complete — 200 OK</div>';
+          log.scrollTop = log.scrollHeight;
+          setTimeout(() => { closeUpload(); }, 1200);
+        }
+      }, 300);
+    }
+  }, 600);
+}
+
 // File browser
 function refreshFiles() { /* TODO: GET /api/files */ }
 function toggleSort() { /* TODO: sort logic */ }
@@ -135,15 +383,10 @@ function closeUpload() { document.getElementById('uploadModal').classList.remove
 function fileSelected(input) {
   if (input.files.length) document.getElementById('fileName').textContent = input.files[0].name;
 }
-async function doUpload() {
+function doUpload() {
   const input = document.getElementById('fileInput');
   if (!input.files.length) return;
-  const form = new FormData();
-  form.append('file', input.files[0]);
-  try {
-    const r = await fetch('/api/files/upload', { method: 'POST', body: form });
-    if (r.ok) { closeUpload(); refreshFiles(); }
-  } catch (e) { alert('Upload failed'); }
+  doDialUpload(input.files[0]);
 }
 
 // Drag and drop
