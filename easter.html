@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Easter Eggs — dshaker.space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="neb n1"></div><div class="neb n2"></div><div class="neb n3"></div>
+<div class="glow" id="glow"></div>
+<button class="theme" id="themeBtn" title="Toggle theme">🌙</button>
+
+<a class="back" href="index.html">← Mission Control</a>
+
+<section class="sec" id="easter">
+  <h2 class="st">🎲 Easter Egg Laboratory</h2>
+  <p class="ss">Click to discover hidden endpoints &mdash; if you dare</p>
+  <div class="et" id="eterm">
+    <div class="tl"><span class="tp">sputnik@space:~$ </span><span class="to">scanning dshaker.space for anomalies...</span></div>
+    <div class="tl"><span class="tp">sputnik@space:~$ </span><span class="ts">4 hidden endpoints detected</span></div>
+    <div class="tl"><span class="tp">sputnik@space:~$ </span><span class="to">click a card below to probe each one</span></div>
+    <div class="tl"><span class="tp">sputnik@space:~$ </span><span class="tc"></span></div>
+  </div>
+  <div class="eg">
+    <div class="ec" onclick="probeEgg(this,'/api/easter/egg')"><div class="ce">🥚</div><div class="cn">The Egg</div><div class="cse">"This is an egg."</div></div>
+    <div class="ec" onclick="probeEgg(this,'/api/easter/coffee')"><div class="ce">☕</div><div class="cn">Coffee?</div><div class="cse">"No coffee. Only void."</div></div>
+    <div class="ec" onclick="probeEgg(this,'/api/easter/hack')"><div class="ce">💻</div><div class="cn">Elite Hack</div><div class="cse">"Access granted. Just kidding."</div></div>
+    <div class="ec" onclick="probeEgg(this,'/api/easter/void')"><div class="ce">◉</div><div class="cn">The Void</div><div class="cse">"The void stares back."</div></div>
+  </div>
+</section>
+
+<script src="main.js"></script>
+</body>
+</html>

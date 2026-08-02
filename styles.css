@@ -30,6 +30,21 @@ h1.title{font-family:'Orbitron',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font
 .nb:hover{transform:translateY(-6px) scale(1.03);background:var(--c-hov);box-shadow:0 8px 40px rgba(123,47,247,.15)}
 .nb .bi{font-size:1.8rem;transition:transform .3s}.nb:hover .bi{transform:scale(1.2) rotate(5deg)}
 .nb .bl{opacity:.6;transition:opacity .3s}.nb:hover .bl{opacity:1}
+/* App Grid (launcher) */
+.appgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;max-width:700px;width:100%;margin-bottom:3rem}
+.appcard{position:relative;display:flex;flex-direction:column;align-items:center;gap:.8rem;padding:2.5rem 1.5rem;background:var(--c-bg);border:1px solid var(--c-bdr);border-radius:20px;color:var(--t1);text-decoration:none;transition:all .4s cubic-bezier(.175,.885,.32,1.275);overflow:hidden}
+.appcard::before{content:'';position:absolute;inset:0;border-radius:20px;padding:1px;background:linear-gradient(135deg,rgba(123,47,247,.5),rgba(33,150,243,.3),rgba(244,114,182,.5));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s}
+.appcard:hover::before{opacity:1}
+.appcard:hover{transform:translateY(-8px) scale(1.03);background:var(--c-hov);box-shadow:0 12px 50px rgba(123,47,247,.2)}
+.appicon{font-size:3rem;transition:transform .3s}
+.appcard:hover .appicon{transform:scale(1.15) rotate(-5deg)}
+.appname{font-family:'Orbitron',sans-serif;font-size:.9rem;letter-spacing:.1em;text-transform:uppercase}
+.appdesc{font-size:.75rem;color:var(--t3);text-align:center;line-height:1.4}
+
+/* Back button */
+.back{position:relative;z-index:10;display:inline-flex;align-items:center;gap:.4rem;margin:2rem auto 0;padding:.5rem 1.2rem;background:var(--c-bg);border:1px solid var(--c-bdr);border-radius:10px;color:var(--t2);text-decoration:none;font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:.08em;transition:all .3s;width:fit-content}
+.back:hover{background:var(--c-hov);color:var(--t1);transform:translateX(-3px)}
+
 .sts{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--t3);letter-spacing:.1em}
 .stsd{width:6px;height:6px;background:var(--ok);border-radius:50%;animation:blink 2s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
@@ -124,4 +139,4 @@ h1.title{font-family:'Orbitron',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font
 .ml .mb:hover{background:var(--c-hov);color:var(--t1)}
 .ml .mb.go{background:rgba(123,47,247,.2);border-color:rgba(123,47,247,.4);color:var(--n-purple)}
 
-@media(max-width:600px){.nav{grid-template-columns:1fr 1fr;gap:.8rem}.orbit{width:160px;height:160px}.r1{width:160px;height:160px}.r2{width:130px;height:130px;top:15px;left:15px}.r3{width:100px;height:100px;top:30px;left:30px}.sec{padding:3rem 1.2rem}.dg{grid-template-columns:1fr}.eg{grid-template-columns:repeat(2,1fr)}.fr{grid-template-columns:auto 1fr auto}.fsz{display:none}}
+@media(max-width:600px){.appgrid{grid-template-columns:1fr 1fr;gap:1rem}.orbit{width:160px;height:160px}.r1{width:160px;height:160px}.r2{width:130px;height:130px;top:15px;left:15px}.r3{width:100px;height:100px;top:30px;left:30px}.sec{padding:3rem 1.2rem}.dg{grid-template-columns:1fr}.eg{grid-template-columns:repeat(2,1fr)}.fr{grid-template-columns:auto 1fr auto}.fsz{display:none}}

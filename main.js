@@ -62,7 +62,7 @@ themeBtn.addEventListener('click', () => {
   themeBtn.textContent = document.body.classList.contains('light') ? '\u2600\uFE0F' : '\uD83C\uDF19';
 });
 
-// Smooth scroll nav
+// Smooth scroll (sub-pages with anchor targets)
 document.querySelectorAll('a.nb').forEach(b => {
   b.addEventListener('click', e => {
     e.preventDefault();

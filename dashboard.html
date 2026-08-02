@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — dshaker.space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="neb n1"></div><div class="neb n2"></div><div class="neb n3"></div>
+<div class="glow" id="glow"></div>
+<button class="theme" id="themeBtn" title="Toggle theme">🌙</button>
+
+<a class="back" href="index.html">← Mission Control</a>
+
+<section class="sec" id="dashboard">
+  <h2 class="st">📡 System Dashboard</h2>
+  <p class="ss">Live status from the mothership</p>
+  <div class="dg" id="dashGrid">
+    <div class="dc"><div class="ci">🟢</div><div class="cl">Status</div><div class="cv" id="dSt"><span class="cst ok"><span class="dot"></span> Operational</span></div><div class="cs" id="dStSub">Checking...</div></div>
+    <div class="dc"><div class="ci">⏱️</div><div class="cl">Uptime</div><div class="cv" id="dUp">--</div><div class="cs">since boot</div></div>
+    <div class="dc"><div class="ci">🖥️</div><div class="cl">Server</div><div class="cv" id="dSrv">--</div><div class="cs">hostname</div></div>
+    <div class="dc"><div class="ci">🐍</div><div class="cl">Runtime</div><div class="cv" id="dPy">--</div><div class="cs">python version</div></div>
+    <div class="dc"><div class="ci">🕐</div><div class="cl">Last Check</div><div class="cv" id="dTime">--</div><div class="cs">UTC</div></div>
+    <div class="dc"><div class="ci">🔗</div><div class="cl">Links</div><div class="cv">4</div><div class="cs">sections planned</div></div>
+  </div>
+  <button class="drf" onclick="refreshDash()"><span class="ri">🔄</span> Refresh</button>
+</section>
+
+<script src="main.js"></script>
+</body>
+</html>

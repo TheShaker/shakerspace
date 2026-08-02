@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Files — dshaker.space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="neb n1"></div><div class="neb n2"></div><div class="neb n3"></div>
+<div class="glow" id="glow"></div>
+<button class="theme" id="themeBtn" title="Toggle theme">🌙</button>
+
+<a class="back" href="index.html">← Mission Control</a>
+
+<section class="sec" id="files">
+  <h2 class="st">📁 File Browser</h2>
+  <p class="ss">Upload, download, and manage hosted files</p>
+  <div class="ft">
+    <button class="fb pri" onclick="openUpload()">⬆️ Upload</button>
+    <button class="fb" onclick="refreshFiles()">🔄 Refresh</button>
+    <button class="fb" onclick="toggleSort()">🔢 Sort</button>
+  </div>
+  <div class="fl" id="fileList">
+    <div class="femp"><span class="ei">📭</span>No files yet — upload something</div>
+  </div>
+  <div class="fd" id="dropZone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+    <span class="di">⬇️</span> Drag files here or click to browse
+  </div>
+</section>
+
+<!-- Upload Modal -->
+<div class="mo" id="uploadModal">
+  <div class="ml">
+    <h3>⬆️ Upload File</h3>
+    <div class="ua" onclick="document.getElementById('fileInput').click()">
+      <span class="ui">📁</span>
+      <span class="ut">Click to select a file</span>
+    </div>
+    <input type="file" id="fileInput" onchange="fileSelected(this)">
+    <div class="un" id="fileName"></div>
+    <div class="ma">
+      <button class="mb" onclick="closeUpload()">Cancel</button>
+      <button class="mb go" onclick="doUpload()">Upload</button>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
