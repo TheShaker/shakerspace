@@ -98,7 +98,6 @@ function thock() {
         'Available commands:',
         '  <span class="clih">EGG</span>     — Easter Egg Laboratory',
         '  <span class="clih">WHOIS</span>   — Contact / identity',
-        '  <span class="clih">API</span>     — List hidden endpoints',
         '  <span class="clih">STATUS</span>  — System status',
         '  <span class="clih">USERS</span>   — List known users',
         '  <span class="clih">LOGIN</span>   — Authenticate (LOGIN &lt;user&gt;)',
@@ -268,7 +267,7 @@ const _eggs = {
   '/api/egg/void':   () => {
     const msg = 'HOVER OVER EGG';
     const bin = [...msg].map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join('');
-    return { void: '◉', binary: bin, message: bin };
+    return { void: '◉', binary: bin };
   },
 };
 const _quotes = [
