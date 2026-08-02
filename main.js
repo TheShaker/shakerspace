@@ -89,17 +89,59 @@ function thock() {
   if (!cli || !inp) return;
   const hist = [];
   let hIdx = -1;
+  let loggedIn = false;
+  let loginState = null;
 
   const CMDS = {
-    HELP: () => [
-      'Available commands:',
-      '  <span class="clih">EGG</span>     — Easter Egg Laboratory',
-      '  <span class="clih">WHOIS</span>   — Contact / identity',
-      '  <span class="clih">API</span>     — List hidden endpoints',
-      '  <span class="clih">STATUS</span>  — System status',
-      '  <span class="clih">CLEAR</span>   — Clear terminal',
-      '  <span class="clih">MANDEV</span>  — ???',
+    HELP: () => {
+      const cmds = [
+        'Available commands:',
+        '  <span class="clih">EGG</span>     — Easter Egg Laboratory',
+        '  <span class="clih">WHOIS</span>   — Contact / identity',
+        '  <span class="clih">API</span>     — List hidden endpoints',
+        '  <span class="clih">STATUS</span>  — System status',
+        '  <span class="clih">USERS</span>   — List known users',
+        '  <span class="clih">LOGIN</span>   — Authenticate (LOGIN &lt;user&gt;)',
+        '  <span class="clih">CLEAR</span>   — Clear terminal',
+        '  <span class="clih">MANDEV</span>  — ???',
+      ];
+      if (loggedIn) {
+        cmds.push('', '  <span class="clis">— SYSADMIN CLEARANCE GRANTED —</span>',
+        '  <span class="clih">SITES</span>   — Site inventory',
+        '  <span class="clih">INFO</span>    — System intel');
+      }
+      return cmds;
+    },
+    USERS: () => [
+      'Known users:',
+      '  1. <span class="clih">Shaker</span>',
+      '  2. <span class="clih">SYSADMIN</span>',
+      '', '  Type <span class="clih">LOGIN &lt;user&gt;</span> to authenticate.',
     ],
+    LOGIN: (user) => {
+      if (loggedIn) return ['Already authenticated as <span class="clis">SYSADMIN</span>.'];
+      const target = (user || '').toUpperCase();
+      if (!target) return ['Usage: <span class="clih">LOGIN &lt;username&gt;</span>'];
+      if (target === 'SHAKER') return [
+        '▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓',
+        '▓  ACCESS DENIED                   ▓',
+        '▓  nice try ;)                     ▓',
+        '▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓',
+      ];
+      if (target === 'SYSADMIN') {
+        loginState = { user: 'SYSADMIN' };
+        return ['SYSADMIN login — enter password:'];
+      }
+      return ['Unknown user: ' + target + '. Type <span class="clih">USERS</span> to list available accounts.'];
+    },
+    SITES: () => {
+      if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
+      return ['Site inventory:', '  1. <span class="clih">DASHBOARD</span>   — dshaker.space', '  2. <span class="clih">EGGS</span>        — easter egg laboratory', '  3. <span class="clih">FILES</span>       — file hosting', '  4. <span class="clih">CONTACT</span>     — identity records', '  5. <span class="clih">API</span>         — <span class="clir">planned</span>', '  6. <span class="clih">RETRO</span>       — <span class="clir">??? classified ???</span>'];
+    },
+    INFO: () => {
+      if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
+      return ['System intel:', '  hostname: sputnik', '  os: Raspberry Pi OS (bookworm)', '  arch: aarch64', '  clearance: <span class="clis">ROOT</span>'];
+    },
     EGG: () => { location.href = 'egg.html'; return ['Navigating to Egg Laboratory...']; },
     WHOIS: () => { location.href = 'contact.html'; return ['Loading identity records...']; },
     API: () => [
@@ -107,8 +149,8 @@ function thock() {
       '─────────────────────────',
       '  <span class="clia">GET</span>  /api/egg/egg      — The Egg',
       '  <span class="clia">GET</span>  /api/egg/coffee   — Coffee?',
-      '  <span class="clia">GET</span>  /api/egg/hack     — Elite Hack',
-      '  <span class="clia">GET</span>  /api/egg/void     — The Void',
+      '  <span class="clia">GET</span>  /api/egg/hack     — Elite Hack (matrix rain)',
+      '  <span class="clia">GET</span>  /api/egg/void     — The Void (binary transmission)',
       '─────────────────────────',
       '  <span class="clir">4 endpoints. More to come.</span>',
     ],
@@ -136,14 +178,32 @@ function thock() {
   }
 
   function execCmd(raw) {
-    const cmd = raw.trim().toUpperCase();
-    if (!cmd) return;
-    hist.push(cmd);
+    const rawCmd = raw.trim();
+    if (!rawCmd) return;
+    hist.push(rawCmd);
     hIdx = hist.length;
-    appendLine('sputnik@space:~$ ' + cmd);
+    appendLine('sputnik@space:~$ ' + rawCmd);
+
+    // Password prompt intercept
+    if (loginState && loginState.user === 'SYSADMIN') {
+      loginState = null;
+      if (rawCmd === 'ROOT123') {
+        loggedIn = true;
+        appendLine('<span class="clis">\u2713 ACCESS GRANTED</span> — Welcome, SYSADMIN.');
+        appendLine('  Type <span class="clih">HELP</span> for new commands.');
+      } else {
+        appendLine('<span class="clie">\u2717 ACCESS DENIED</span> — incorrect password.');
+      }
+      out.scrollTop = out.scrollHeight;
+      return;
+    }
+
+    const parts = rawCmd.toUpperCase().split(/\s+/);
+    const cmd = parts[0];
+    const arg = parts.slice(1).join(' ');
     if (CMDS[cmd]) {
-      const res = CMDS[cmd]();
-      res.forEach(l => appendLine(l));
+      const res = CMDS[cmd](arg);
+      if (res) res.forEach(l => appendLine(l));
     } else {
       appendLine('<span class="clie">command not found: ' + cmd + '</span>  — type <span class="clih">HELP</span>');
     }
@@ -218,19 +278,14 @@ const _eggs = {
   '/api/egg/egg':   { egg: '🥚', message: 'This is an egg.' },
   '/api/egg/coffee': { coffee: 'void', message: 'No coffee. Only void.' },
   '/api/egg/hack':   () => {
-    const msgs = [
-      'ACCESS GRANTED',
-      'HACK THE PLANET',
-      'I SEE YOU',
-      'JUST KIDDING',
-      'NICE TRY',
-      'YOU ARE THE EASTER EGG',
-    ];
-    const msg = msgs[Math.floor(Math.random() * msgs.length)];
-    const bin = [...msg].map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join('');
-    return { binary: bin, ascii: msg, message: 'Access granted. Just kidding.' };
+    toggleHack();
+    return { status: 'MATRIX RAIN DEPLOYED', message: 'Hack the planet. Click again to dismiss.' };
   },
-  '/api/egg/void':   { void: '◉', message: 'The void stares back.' },
+  '/api/egg/void':   () => {
+    const msg = 'HOVER OVER EGG';
+    const bin = [...msg].map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join('');
+    return { void: '◉', binary: bin, ascii: msg, message: bin };
+  },
 };
 const _quotes = [
   "The universe is under no obligation to make sense to you. — Neil deGrasse Tyson",
@@ -301,7 +356,6 @@ function probeEgg(card, url) {
   }
 
   window.toggleHack = function() {
-    const btn = document.getElementById('hackBtn');
     const starCvs = document.getElementById('starfield');
     const nebs = document.querySelectorAll('.neb');
     mActive = !mActive;
@@ -310,16 +364,12 @@ function probeEgg(card, url) {
       cvs.style.display = 'block';
       starCvs.style.opacity = '0';
       nebs.forEach(n => n.style.opacity = '0');
-      btn.textContent = '🟢 DISMISS';
-      btn.classList.add('active');
       mDraw();
       addEventListener('resize', mResize);
     } else {
       cvs.style.display = 'none';
       starCvs.style.opacity = '';
       nebs.forEach(n => n.style.opacity = '');
-      btn.textContent = 'HACK MODE';
-      btn.classList.remove('active');
       cancelAnimationFrame(mraf);
       mctx.clearRect(0, 0, cvs.width, cvs.height);
       removeEventListener('resize', mResize);
