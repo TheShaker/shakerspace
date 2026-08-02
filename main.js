@@ -217,10 +217,19 @@ async function refreshDash() {
 const _eggs = {
   '/api/egg/egg':   { egg: '🥚', message: 'This is an egg.' },
   '/api/egg/coffee': { coffee: 'void', message: 'No coffee. Only void.' },
-  '/api/egg/hack':   () => ({
-    matrix: Array.from({length: 128}, () => Math.random() < 0.5 ? '0' : '1').join(''),
-    message: 'Access granted. Just kidding.'
-  }),
+  '/api/egg/hack':   () => {
+    const msgs = [
+      'ACCESS GRANTED',
+      'HACK THE PLANET',
+      'I SEE YOU',
+      'JUST KIDDING',
+      'NICE TRY',
+      'YOU ARE THE EASTER EGG',
+    ];
+    const msg = msgs[Math.floor(Math.random() * msgs.length)];
+    const bin = [...msg].map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join('');
+    return { binary: bin, ascii: msg, message: 'Access granted. Just kidding.' };
+  },
   '/api/egg/void':   { void: '◉', message: 'The void stares back.' },
 };
 const _quotes = [
@@ -263,7 +272,7 @@ function probeEgg(card, url) {
   if (!cvs) return;
   const mctx = cvs.getContext('2d');
   let cols = [], mraf = null, mActive = false;
-  const CHARS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF<>{}[]|/\\';
+  const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@!<>{}[]|/\\=+~^';
   const FONT = 14;
 
   function mResize() {
@@ -309,7 +318,7 @@ function probeEgg(card, url) {
       cvs.style.display = 'none';
       starCvs.style.opacity = '';
       nebs.forEach(n => n.style.opacity = '');
-      btn.textContent = '黑客 HACK MODE';
+      btn.textContent = 'HACK MODE';
       btn.classList.remove('active');
       cancelAnimationFrame(mraf);
       mctx.clearRect(0, 0, cvs.width, cvs.height);
