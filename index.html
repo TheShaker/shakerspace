@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dshaker.space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="neb n1"></div><div class="neb n2"></div><div class="neb n3"></div>
+<div class="glow" id="glow"></div>
+<button class="theme" id="themeBtn" title="Toggle theme">🌙</button>
+
+<div class="wrap">
+  <div class="orbit">
+    <div class="ring r1"><div class="rdot"></div></div>
+    <div class="ring r2"><div class="rdot"></div></div>
+    <div class="ring r3"><div class="rdot"></div></div>
+    <div class="center"><span class="ico">🚀</span></div>
+  </div>
+  <h1 class="title">dshaker.space</h1>
+  <p class="sub">Under Construction</p>
+  <div class="nav">
+    <a class="nb" href="#dashboard"><span class="bi">🔬</span><span class="bl">Dashboard</span></a>
+    <a class="nb" href="#easter"><span class="bi">🎲</span><span class="bl">Easter Eggs</span></a>
+    <a class="nb" href="#files"><span class="bi">📁</span><span class="bl">Files</span></a>
+    <a class="nb" href="#contact"><span class="bi">📡</span><span class="bl">Contact</span></a>
+  </div>
+  <div class="sts"><span class="stsd"></span> Systems online &mdash; more incoming</div>
+</div>
+
+<div class="sdiv"></div>
+<section class="sec" id="dashboard">
+  <h2 class="st">📡 System Dashboard</h2>
+  <p class="ss">Live status from the mothership</p>
+  <div class="dg" id="dashGrid">
+    <div class="dc"><div class="ci">🟢</div><div class="cl">Status</div><div class="cv" id="dSt"><span class="cst ok"><span class="dot"></span> Operational</span></div><div class="cs" id="dStSub">Checking...</div></div>
+    <div class="dc"><div class="ci">⏱️</div><div class="cl">Uptime</div><div class="cv" id="dUp">--</div><div class="cs">since boot</div></div>
+    <div class="dc"><div class="ci">🖥️</div><div class="cl">Server</div><div class="cv" id="dSrv">--</div><div class="cs">hostname</div></div>
+    <div class="dc"><div class="ci">🐍</div><div class="cl">Runtime</div><div class="cv" id="dPy">--</div><div class="cs">python version</div></div>
+    <div class="dc"><div class="ci">🕐</div><div class="cl">Last Check</div><div class="cv" id="dTime">--</div><div class="cs">UTC</div></div>
+    <div class="dc"><div class="ci">🔗</div><div class="cl">Links</div><div class="cv">4</div><div class="cs">sections planned</div></div>
+  </div>
+  <button class="drf" onclick="refreshDash()"><span class="ri">🔄</span> Refresh</button>
+</section>
+
+<div class="sdiv"></div>
+<section class="sec" id="easter">
+  <h2 class="st">🎲 Easter Egg Laboratory</h2>
+  <p class="ss">Click to discover hidden endpoints &mdash; if you dare</p>
+  <div class="et" id="eterm">
+    <div class="tl"><span class="tp">sputnik@space:~$ </span><span class="to">scanning dshaker.space for anomalies...</span></div>
+    <div class="tl"><span class="tp">sputnik@space:~$ </span><span class="ts">4 hidden endpoints detected</span></div>
+    <div class="tl"><span class="tp">sputnik@space:~$ </span><span class="to">click a card below to probe each one</span></div>
+    <div class="tl"><span class="tp">sputnik@space:~$ </span><span class="tc"></span></div>
+  </div>
+  <div class="eg">
+    <div class="ec" onclick="probeEgg(this,'/api/easter/egg')"><div class="ce">🥚</div><div class="cn">The Egg</div><div class="cse">"This is an egg."</div></div>
+    <div class="ec" onclick="probeEgg(this,'/api/easter/coffee')"><div class="ce">☕</div><div class="cn">Coffee?</div><div class="cse">"No coffee. Only void."</div></div>
+    <div class="ec" onclick="probeEgg(this,'/api/easter/hack')"><div class="ce">💻</div><div class="cn">Elite Hack</div><div class="cse">"Access granted. Just kidding."</div></div>
+    <div class="ec" onclick="probeEgg(this,'/api/easter/void')"><div class="ce">◉</div><div class="cn">The Void</div><div class="cse">"The void stares back."</div></div>
+  </div>
+</section>
+
+<div class="sdiv"></div>
+<section class="sec" id="files">
+  <h2 class="st">📁 File Browser</h2>
+  <p class="ss">Upload, download, and manage hosted files</p>
+  <div class="ft">
+    <button class="fb pri" onclick="openUpload()">⬆️ Upload</button>
+    <button class="fb" onclick="refreshFiles()">🔄 Refresh</button>
+    <button class="fb" onclick="toggleSort()">🔢 Sort</button>
+  </div>
+  <div class="fl" id="fileList">
+    <div class="fr"><span class="fi">📄</span><span class="fn">readme.txt</span><span class="fsz">1.2 KB</span><div class="fa"><button class="fab" title="Download">⇣</button><button class="fab del" title="Delete">✕</button></div></div>
+    <div class="fr"><span class="fi">📷</span><span class="fn">photo_2025.jpg</span><span class="fsz">2.4 MB</span><div class="fa"><button class="fab" title="Download">⇣</button><button class="fab del" title="Delete">✕</button></div></div>
+    <div class="fr"><span class="fi">📌</span><span class="fn">notes.md</span><span class="fsz">856 B</span><div class="fa"><button class="fab" title="Download">⇣</button><button class="fab del" title="Delete">✕</button></div></div>
+    <div class="fr"><span class="fi">📦</span><span class="fn">archive.zip</span><span class="fsz">12.7 MB</span><div class="fa"><button class="fab" title="Download">⇣</button><button class="fab del" title="Delete">✕</button></div></div>
+  </div>
+  <div class="fd" id="dropZone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+    <span class="di">⬇️</span> Drag files here or click to browse
+  </div>
+</section>
+
+<div class="sdiv"></div>
+<section class="sec" id="contact">
+  <h2 class="st">📡 Connect</h2>
+  <p class="ss">Ways to reach the mothership</p>
+  <div class="cg">
+    <div class="cc"><div class="cci">🌐</div><div class="ccl">Domain</div><div class="ccv">dshaker.space</div></div>
+    <div class="cc"><div class="cci">📧</div><div class="ccl">Email</div><div class="ccv"><a href="mailto:shaker@dshaker.space">shaker@dshaker.space</a></div></div>
+    <div class="cc"><div class="cci">🤖</div><div class="ccl">Nanobot Webhook</div><div class="ccv">POST /api/nanobot/alert<div class="wb">🔔 Ready</div></div></div>
+  </div>
+</section>
+
+<div style="height:4rem"></div>
+
+<!-- Upload Modal -->
+<div class="mo" id="uploadModal">
+  <div class="ml">
+    <h3>⬆️ Upload File</h3>
+    <div class="ua" onclick="document.getElementById('fileInput').click()">
+      <span class="ui">📁</span>
+      <span class="ut">Click to select a file</span>
+    </div>
+    <input type="file" id="fileInput" onchange="fileSelected(this)">
+    <div class="un" id="fileName"></div>
+    <div class="ma">
+      <button class="mb" onclick="closeUpload()">Cancel</button>
+      <button class="mb go" onclick="doUpload()">Upload</button>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
