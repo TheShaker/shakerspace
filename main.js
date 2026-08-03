@@ -134,7 +134,7 @@ function thock() {
     },
     SITES: () => {
       if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
-      return ['Site inventory:', '  1. <span class="clih">DASHBOARD</span>   — dshaker.space', '  2. <span class="clih">EGGS</span>        — easter egg laboratory', '  3. <span class="clih">FILES</span>       — file hosting', '  4. <span class="clih">CONTACT</span>     — identity records', '  5. <span class="clih">API</span>         — <span class="clir">planned</span>'];
+      return ['Site inventory:', '  1. <span class="clih">DASHBOARD</span>   — dshaker.space', '  2. <span class="clih">EGGS</span>        — easter egg laboratory', '  3. <span class="clih">FILES</span>       — file hosting', '  4. <span class="clih">CONTACT</span>     — identity records', '  5. <span class="clih">RETRO</span>       — <span class="clir">??? classified ???</span>', '  6. <span class="clih">API</span>         — <span class="clir">planned</span>'];
     },
     INFO: () => {
       if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
