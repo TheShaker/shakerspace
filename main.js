@@ -445,3 +445,75 @@ function handleDrop(e) {
   }
 }
 dropZone.addEventListener('click', () => document.getElementById('fileInput').click());
+
+// Hidden emoji easter eggs
+(function() {
+  const EMOJIS = [
+    { emoji: '🛸', x: 12, y: 25 },
+    { emoji: '🪐', x: 78, y: 15 },
+    { emoji: '👾', x: 55, y: 72 },
+    { emoji: '🌈', x: 8, y: 65 },
+    { emoji: '💎', x: 88, y: 48 },
+    { emoji: '🎭', x: 35, y: 88 },
+    { emoji: '⭐', x: 65, y: 8 },
+  ];
+  const REVEAL_R = 120;
+  const found = new Set(JSON.parse(localStorage.getItem('shaker_eggs') || '[]'));
+
+  // Place emoji spots
+  const spots = EMOJIS.map((e, i) => {
+    const el = document.createElement('div');
+    el.className = 'emoji-spot';
+    el.textContent = e.emoji;
+    el.style.left = e.x + '%';
+    el.style.top = e.y + '%';
+    el.dataset.idx = i;
+    if (found.has(i)) el.classList.add('revealed');
+    document.body.appendChild(el);
+    return el;
+  });
+
+  // Toast
+  const toast = document.createElement('div');
+  toast.className = 'found-toast';
+  document.body.appendChild(toast);
+  let toastTimer = null;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+  showToast(found.size + ' / ' + EMOJIS.length + ' found');
+
+  // Click to spotlight
+  document.addEventListener('click', e => {
+    // Don't interfere with interactive elements
+    if (e.target.closest('a, button, input, .cli, .appcard, .nb, .ec, .theme, .fd, .fab, .hackBtn, .mo')) return;
+
+    // Spawn spotlight
+    const sp = document.createElement('div');
+    sp.className = 'spotlight';
+    sp.style.left = e.clientX + 'px';
+    sp.style.top = e.clientY + 'px';
+    document.body.appendChild(sp);
+    setTimeout(() => sp.remove(), 600);
+
+    // Check for nearby emojis
+    EMOJIS.forEach((em, i) => {
+      if (found.has(i)) return;
+      const emX = em.x / 100 * innerWidth;
+      const emY = em.y / 100 * innerHeight;
+      const dist = Math.hypot(e.clientX - emX, e.clientY - emY);
+      if (dist < REVEAL_R) {
+        found.add(i);
+        localStorage.setItem('shaker_eggs', JSON.stringify([...found]));
+        spots[i].classList.add('revealed');
+        setTimeout(() => showToast('✨ Found ' + em.emoji + '! (' + found.size + '/' + EMOJIS.length + ')'), 300);
+        if (found.size === EMOJIS.length) {
+          setTimeout(() => showToast('🏆 All emojis found!'), 1000);
+        }
+      }
+    });
+  });
+})();
