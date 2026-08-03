@@ -96,7 +96,8 @@ function thock() {
     HELP: () => {
       const cmds = [
         'Available commands:',
-        '  <span class="clih">EGG</span>     — Easter Egg Laboratory',
+        '  <span class="clih">EGG</span>      — Easter Egg Laboratory',
+        '  <span class="clih">RETRO</span>    — Retro Zone',
         '  <span class="clih">WHOIS</span>   — Contact / identity',
         '  <span class="clih">STATUS</span>  — System status',
         '  <span class="clih">USERS</span>   — List known users',
@@ -134,13 +135,14 @@ function thock() {
     },
     SITES: () => {
       if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
-      return ['Site inventory:', '  1. <span class="clih">DASHBOARD</span>   — dshaker.space', '  2. <span class="clih">EGGS</span>        — easter egg laboratory', '  3. <span class="clih">FILES</span>       — file hosting', '  4. <span class="clih">CONTACT</span>     — identity records', '  5. <span class="clih">API</span>         — <span class="clir">planned</span>', '  6. <span class="clih">RETRO</span>       — <span class="clir">??? classified ???</span>'];
+      return ['Site inventory:', '  1. <span class="clih">DASHBOARD</span>   — dshaker.space', '  2. <span class="clih">EGGS</span>        — easter egg laboratory', '  3. <span class="clih">FILES</span>       — file hosting', '  4. <span class="clih">CONTACT</span>     — identity records', '  5. <span class="clih">RETRO</span>       — windows 95 vibes', '  6. <span class="clih">API</span>         — <span class="clir">planned</span>'];
     },
     INFO: () => {
       if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
       return ['System intel:', '  hostname: sputnik', '  os: Raspberry Pi OS (bookworm)', '  arch: aarch64', '  clearance: <span class="clis">ROOT</span>'];
     },
-    EGG: () => { location.href = 'egg.html'; return ['Navigating to Egg Laboratory...']; },
+    EGG: () => { location.href = 'eggs.html'; return ['Navigating to Egg Laboratory...']; },
+    RETRO: () => { location.href = 'retro.html'; return ['Entering the Retro Zone...']; },
     WHOIS: () => { location.href = 'contact.html'; return ['Loading identity records...']; },
 
     STATUS: () => [
