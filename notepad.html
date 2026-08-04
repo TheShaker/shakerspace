@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notepad -- dshaker.space/retro</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"MS Sans Serif","Comic Sans MS",Tahoma,Arial,sans-serif;background-color:#000033;background-image:radial-gradient(1px 1px at 10% 20%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 30% 70%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 50% 10%,#ff0 50%,transparent 50%),radial-gradient(1px 1px at 70% 40%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 90% 80%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 15% 90%,#0ff 50%,transparent 50%),radial-gradient(1px 1px at 45% 55%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 65% 25%,#f0f 50%,transparent 50%),radial-gradient(1px 1px at 85% 60%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 25% 45%,#fff 50%,transparent 50%);color:#00ff00;min-height:100vh;overflow-x:hidden}
+.win95-window{border:2px solid;border-color:#dfdfdf #808080 #808080 #dfdfdf;background:#c0c0c0;margin:40px auto;max-width:660px;box-shadow:2px 2px 0 #000}
+.win95-titlebar{background:linear-gradient(90deg,#000080,#1084d0);color:#fff;font-family:"MS Sans Serif",Tahoma,Arial,sans-serif;font-size:13px;font-weight:bold;padding:3px 4px;display:flex;align-items:center;justify-content:space-between;user-select:none}
+.title-text{display:flex;align-items:center;gap:5px}
+.win95-btn-group{display:flex;gap:2px}
+.win95-btn{width:16px;height:14px;background:#c0c0c0;border:1px solid;border-color:#fff #808080 #808080 #fff;font-size:9px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#000;text-decoration:none}
+.win95-btn:active{border-color:#808080 #fff #fff #808080}
+.win95-body{background:#fff;color:#000;font-family:'Courier New',monospace;font-size:12px;line-height:1.6}
+.notepad-editor{padding:12px;min-height:420px;outline:none}
+.notepad-status{padding:2px 6px;border-top:1px solid #fff;background:#c0c0c0;font-family:'MS Sans Serif',Tahoma,Arial,sans-serif;font-size:11px;color:#000;display:flex;gap:8px}
+.notepad-status span{padding:1px 6px;border:1px solid;border-color:#808080 #fff #fff #808080}
+.win95-taskbar{position:fixed;bottom:0;left:0;right:0;height:36px;background:#c0c0c0;border-top:2px solid #fff;display:flex;align-items:center;padding:0 4px;z-index:1000;font-family:"MS Sans Serif",Tahoma,Arial,sans-serif;font-size:12px}
+.taskbar-item{padding:3px 12px;margin-left:4px;background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;cursor:pointer;color:#000;display:flex;align-items:center;gap:4px;text-decoration:none}
+.taskbar-item.active{border-color:#808080 #fff #fff #808080;background:#b0b0b0}
+.taskbar-item:hover{background:#d0d0d0}
+.taskbar-clock{margin-left:auto;padding:3px 8px;border:1px solid;border-color:#808080 #fff #fff #808080;background:#c0c0c0;color:#000;font-size:11px}
+.note{color:#ff0;text-align:center;font-size:11px;margin-top:8px}
+@media(max-width:600px){.win95-window{margin:20px auto}}
+</style>
+</head>
+<body>
+
+<div class="win95-window" id="notepadWindow">
+<div class="win95-titlebar">
+<div class="title-text"><span>Notepad -- Shaker's System Config (circa 1998)</span></div>
+<div class="win95-btn-group"><div class="win95-btn">_</div><div class="win95-btn">[]</div><a href="retro.html" class="win95-btn">X</a></div>
+</div>
+<div class="win95-body">
+<pre class="notepad-editor" id="pad" contenteditable="true" spellcheck="false">
+== Shaker's System Config (circa 1998) ==
+
+  CPU:     Intel Pentium MMX 233 MHz
+  RAM:     64 MB EDO (upgraded from 32!)
+  HDD:     4.3 GB Western Digital
+  GPU:     3dfx Voodoo 2 (12 MB)
+  Sound:   Sound Blaster 16
+  Modem:   US Robotics 56K v.90
+  Monitor: 15" ViewSonic
+  OS:      Windows 95 OSR2
+
+  FAVORITE TRICKS:
+  - C:\> EDIT AUTOEXEC.BAT at 2 AM
+  - Defrag while watching the blocks
+  - IRQ conflicts for sport
+  - "It works on MY machine"
+
+  CURRENT PROJECTS:
+  > ESP32 digital pet (Blink v2.0)
+  > Shakerspace (this page!)
+  > Trying to get Quake to run smoother
+  > Learning HTML from a book I got
+    at the library
+
+  NOTES TO SELF:
+  - NEVER format C: without backup
+  - IRQ 5 is for sound card ONLY
+  - Netscape > IE (fight me)
+  - Remember: the web is forever
+
+  -- sysadmin@localhost
+</pre>
+</div>
+<div class="notepad-status"><span>Ln 1, Col 1</span><span style="margin-left:auto">UTF-8</span></div>
+</div>
+
+<div class="note">~*~ go ahead, click it -- it's editable! (not really saved to disk tho) ~*~</div>
+
+<div class="win95-taskbar">
+<a class="taskbar-item" href="retro.html"><span>🪟</span> Retro Zone</a>
+<a class="taskbar-item" href="calculator.html"><span>🧮</span> Calculator</a>
+<a class="taskbar-item" href="boot.html"><span>🖥️</span> Boot</a>
+<a class="taskbar-item active" href="notepad.html"><span>📝</span> Notepad</a>
+<div class="taskbar-clock" id="clock">12:00 AM</div>
+</div>
+
+<script>
+function updateClock(){
+var now=new Date();
+var h=now.getHours();
+var m=now.getMinutes().toString().padStart(2,'0');
+var ampm=h>=12?'PM':'AM';
+h=h%12||12;
+document.getElementById('clock').textContent=h+':'+m+' '+ampm;
+}
+updateClock();
+setInterval(updateClock,30000);
+</script>
+</body>
+</html>

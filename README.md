@@ -14,6 +14,9 @@ Galaxy-themed personal site, deployed on [Cloudflare Pages](https://pages.cloudf
 | `files.html` | File browser UI (backed by `/api/files`, R2 pending) |
 | `contact.html` | Ways to reach the mothership (mailto button — no backend) |
 | `retro.html` | The Retro Zone — Win95 + Geocities nostalgia page |
+| `calculator.html` | Win95 Calculator app (reached from the Retro start menu) |
+| `boot.html` | Win95 System Boot screen app (reached from the Retro start menu) |
+| `notepad.html` | Win95 Notepad app (reached from the Retro start menu) |
 | `404.html` | Themed lost-in-space 404 |
 | `styles.css` | All styling — galaxy theme, light/dark mode |
 | `main.js` | Client-side interactivity — starfield, theme, CLI, files, dashboard |

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Boot -- dshaker.space/retro</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"MS Sans Serif","Comic Sans MS",Tahoma,Arial,sans-serif;background-color:#000033;background-image:radial-gradient(1px 1px at 10% 20%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 30% 70%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 50% 10%,#ff0 50%,transparent 50%),radial-gradient(1px 1px at 70% 40%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 90% 80%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 15% 90%,#0ff 50%,transparent 50%),radial-gradient(1px 1px at 45% 55%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 65% 25%,#f0f 50%,transparent 50%),radial-gradient(1px 1px at 85% 60%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 25% 45%,#fff 50%,transparent 50%);color:#00ff00;min-height:100vh;overflow-x:hidden}
+.win95-window{border:2px solid;border-color:#dfdfdf #808080 #808080 #dfdfdf;background:#c0c0c0;margin:40px auto;max-width:620px;box-shadow:2px 2px 0 #000}
+.win95-titlebar{background:linear-gradient(90deg,#000080,#1084d0);color:#fff;font-family:"MS Sans Serif",Tahoma,Arial,sans-serif;font-size:13px;font-weight:bold;padding:3px 4px;display:flex;align-items:center;justify-content:space-between;user-select:none}
+.title-text{display:flex;align-items:center;gap:5px}
+.win95-btn-group{display:flex;gap:2px}
+.win95-btn{width:16px;height:14px;background:#c0c0c0;border:1px solid;border-color:#fff #808080 #808080 #fff;font-size:9px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#000;text-decoration:none}
+.win95-btn:active{border-color:#808080 #fff #fff #808080}
+.win95-body{padding:12px;background:#c0c0c0}
+@keyframes bootFlicker{0%{opacity:0}10%{opacity:1}12%{opacity:0}14%{opacity:1}100%{opacity:1}}
+.boot-screen{background:#000;color:#aaa;font-family:"Courier New",monospace;font-size:12px;padding:16px;min-height:200px;animation:bootFlicker 0.3s ease-out;max-height:420px;overflow-y:auto}
+.boot-screen .bios-line{margin:2px 0}
+.boot-screen .bios-ok{color:#0f0}
+.boot-screen .bios-warn{color:#ff0}
+.win95-taskbar{position:fixed;bottom:0;left:0;right:0;height:36px;background:#c0c0c0;border-top:2px solid #fff;display:flex;align-items:center;padding:0 4px;z-index:1000;font-family:"MS Sans Serif",Tahoma,Arial,sans-serif;font-size:12px}
+.taskbar-item{padding:3px 12px;margin-left:4px;background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;cursor:pointer;color:#000;display:flex;align-items:center;gap:4px;text-decoration:none}
+.taskbar-item.active{border-color:#808080 #fff #fff #808080;background:#b0b0b0}
+.taskbar-item:hover{background:#d0d0d0}
+.taskbar-clock{margin-left:auto;padding:3px 8px;border:1px solid;border-color:#808080 #fff #fff #808080;background:#c0c0c0;color:#000;font-size:11px}
+.note{color:#ff0;text-align:center;font-size:11px;margin-top:8px}
+@media(max-width:600px){.win95-window{margin:20px auto}}
+</style>
+</head>
+<body>
+
+<div class="win95-window" id="bootWindow">
+<div class="win95-titlebar">
+<div class="title-text"><span>System Boot</span></div>
+<div class="win95-btn-group"><a href="retro.html" class="win95-btn">X</a></div>
+</div>
+<div class="win95-body">
+<div class="boot-screen" id="bootScreen"></div>
+</div>
+</div>
+
+<div class="note">~*~ press any key to continue... (or just watch) ~*~</div>
+
+<div class="win95-taskbar">
+<a class="taskbar-item" href="retro.html"><span>🪟</span> Retro Zone</a>
+<a class="taskbar-item" href="calculator.html"><span>🧮</span> Calculator</a>
+<a class="taskbar-item active" href="boot.html"><span>🖥️</span> Boot</a>
+<a class="taskbar-item" href="notepad.html"><span>📝</span> Notepad</a>
+<div class="taskbar-clock" id="clock">12:00 AM</div>
+</div>
+
+<script>
+var lines=[
+{t:'Phoenix BIOS 4.0 Release 6.0',cls:'bios-ok'},
+{t:'Copyright 1985-1998 Phoenix Technologies Ltd.',cls:''},
+{t:'',cls:''},
+{t:'Pentium MMX CPU at 233MHz',cls:'bios-ok'},
+{t:'Memory Test: 65536K OK',cls:'bios-ok'},
+{t:'',cls:''},
+{t:'Detecting Primary Master... WD AC24300 4.3GB',cls:'bios-ok'},
+{t:'Detecting Primary Master... CD-ROM 24X',cls:'bios-ok'},
+{t:'',cls:''},
+{t:'Sound Blaster 16 detected at Port 220, IRQ 5',cls:'bios-ok'},
+{t:'3dfx Voodoo 2 detected',cls:'bios-ok'},
+{t:'',cls:''},
+{t:'Starting Windows 95...',cls:'bios-ok'},
+{t:'',cls:''},
+{t:'WARNING: HIMEM.SYS is testing extended memory...done.',cls:'bios-warn'},
+{t:'',cls:''},
+{t:'C:\\WINDOWS>win',cls:'bios-ok'},
+{t:'',cls:''},
+{t:'Welcome to Windows 95',cls:'bios-ok'}
+];
+var i=0;
+function showLine(){
+if(i>=lines.length)return;
+var el=document.getElementById('bootScreen');
+var div=document.createElement('div');
+div.className='bios-line '+(lines[i].cls||'');
+div.textContent=lines[i].t||'\u00A0';
+el.appendChild(div);
+el.scrollTop=el.scrollHeight;
+i++;
+setTimeout(showLine,lines[i-1].t?120+Math.random()*200:80);
+}
+setTimeout(showLine,800);
+
+function updateClock(){
+var now=new Date();
+var h=now.getHours();
+var m=now.getMinutes().toString().padStart(2,'0');
+var ampm=h>=12?'PM':'AM';
+h=h%12||12;
+document.getElementById('clock').textContent=h+':'+m+' '+ampm;
+}
+updateClock();
+setInterval(updateClock,30000);
+</script>
+</body>
+</html>

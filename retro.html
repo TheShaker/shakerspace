@@ -83,19 +83,6 @@ body{font-family:"Comic Sans MS","Comic Sans","MS Sans Serif",Tahoma,Arial,sans-
 .taskbar-clock{margin-left:auto;padding:3px 8px;border:1px solid;border-color:#808080 #fff #fff #808080;background:#c0c0c0;color:#000;font-size:11px}
 .geocities-tile{position:fixed;top:0;left:0;right:0;bottom:36px;pointer-events:none;z-index:-1}
 .sparkle-trail{position:fixed;pointer-events:none;z-index:9999;font-size:10px}
-.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
-.calc-btn{background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;padding:8px 0;font-size:13px;font-family:"MS Sans Serif",Tahoma,Arial,sans-serif;color:#000;cursor:pointer;text-align:center}
-.calc-btn:active{border-color:#808080 #fff #fff #808080}
-.calc-btn.op{background:#d0d0d0}
-.calc-btn.eq{background:#b0b0c0;font-weight:bold}
-.calc-btn.clear{color:#c00}
-.calc-display{background:#fff;border:2px solid;border-color:#808080 #fff #fff #808080;padding:4px 8px;font-size:20px;font-family:"Courier New",monospace;color:#000;text-align:right;margin-bottom:6px;overflow:hidden;white-space:nowrap;min-height:28px}
-.calc-history{background:#fff;border:2px solid;border-color:#808080 #fff #fff #808080;padding:4px 8px;font-size:10px;font-family:"Courier New",monospace;color:#888;margin-bottom:4px;min-height:16px;max-height:48px;overflow:hidden}
-@keyframes bootFlicker{0%{opacity:0}10%{opacity:1}12%{opacity:0}14%{opacity:1}100%{opacity:1}}
-.boot-screen{background:#000;color:#aaa;font-family:"Courier New",monospace;font-size:12px;padding:16px;min-height:200px;animation:bootFlicker 0.3s ease-out}
-.boot-screen .bios-line{margin:2px 0}
-.boot-screen .bios-ok{color:#0f0}
-.boot-screen .bios-warn{color:#ff0}
 @media(max-width:600px){.geo-header h1{font-size:22px}.win95-window{margin:8px}.badge-row{gap:6px}.about-table td{display:block;width:100%}.about-table .avatar-cell{width:100%;margin-bottom:8px}}
 </style>
 </head>
@@ -185,52 +172,8 @@ body{font-family:"Comic Sans MS","Comic Sans","MS Sans Serif",Tahoma,Arial,sans-
 
 <hr class="fire-hr">
 
-<!-- WIN95 NOTEPAD WINDOW -->
-<div class="win95-window" id="notepadWindow">
-<div class="win95-titlebar">
-<div class="title-text"><span>Notepad</span></div>
-<div class="win95-btn-group"><div class="win95-btn">_</div><div class="win95-btn">[]</div><div class="win95-btn">X</div></div>
-</div>
-<div class="win95-body" style="background:#fff;color:#000;font-family:'Courier New',monospace;font-size:12px;line-height:1.6;padding:12px">
-<pre style="margin:0;white-space:pre-wrap;word-wrap:break-word">
-== Shaker's System Config (circa 1998) ==
-
-  CPU:     Intel Pentium MMX 233 MHz
-  RAM:     64 MB EDO (upgraded from 32!)
-  HDD:     4.3 GB Western Digital
-  GPU:     3dfx Voodoo 2 (12 MB)
-  Sound:   Sound Blaster 16
-  Modem:   US Robotics 56K v.90
-  Monitor: 15" ViewSonic
-  OS:      Windows 95 OSR2
-
-  FAVORITE TRICKS:
-  - C:\> EDIT AUTOEXEC.BAT at 2 AM
-  - Defrag while watching the blocks
-  - IRQ conflicts for sport
-  - "It works on MY machine"
-
-  CURRENT PROJECTS:
-  > ESP32 digital pet (Blink v2.0)
-  > Shakerspace (this page!)
-  > Trying to get Quake to run smoother
-  > Learning HTML from a book I got
-    at the library
-
-  NOTES TO SELF:
-  - NEVER format C: without backup
-  - IRQ 5 is for sound card ONLY
-  - Netscape > IE (fight me)
-  - Remember: the web is forever
-
-  -- sysadmin@localhost
-</pre>
-</div>
-<div style="padding:2px 6px;border-top:1px solid #fff;background:#c0c0c0;font-family:'MS Sans Serif',Tahoma,Arial,sans-serif;font-size:11px;color:#000;display:flex;gap:8px">
-<span style="padding:1px 6px;border:1px solid;border-color:#808080 #fff #fff #808080">Ln 1, Col 1</span>
-<span style="padding:1px 6px;border:1px solid;border-color:#808080 #fff #fff #808080;margin-left:auto">UTF-8</span>
-</div>
-</div><!-- GUESTBOOK -->
+<!-- WIN95 NOTEPAD -- now on its own page: notepad.html -->
+<!-- GUESTBOOK -->
 <div class="content-section" id="guestbookWindow">
 <h2>GuEsTbOoK</h2>
 <p style="text-align:center;color:#0ff;font-size:13px;margin-bottom:12px">Sign my guestbook and let me know you were here!! <span class="spinning-email">@</span></p>
@@ -288,7 +231,7 @@ body{font-family:"Comic Sans MS","Comic Sans","MS Sans Serif",Tahoma,Arial,sans-
 <p style="text-align:center">
 This page is a framework! Future features planned:<br><br>
 <span style="color:#0ff">*</span> Animated cursor trails (working! check the sparkle trail)<br>
-<span style="color:#f0f">*</span> Win95 Calculator (just added it!)<br>
+<span style="color:#0ff">*</span> Win95 Calculator (now on <a href="calculator.html" style="color:#0ff">its own page</a>!)<br>
 <span style="color:#ff0">*</span> Pixel art gallery<br>
 <span style="color:#0f0">*</span> More MIDI jukebox songs<br>
 <span style="color:#f80">*</span> Email the Webmaster form<br>
@@ -297,48 +240,9 @@ This page is a framework! Future features planned:<br><br>
 </p>
 </div>
 
-<!-- WIN95 CALCULATOR -->
-<div class="win95-window" id="calcWindow" style="max-width:240px">
-<div class="win95-titlebar">
-<div class="title-text"><span>Calculator</span></div>
-<div class="win95-btn-group"><div class="win95-btn">_</div><div class="win95-btn">[]</div><div class="win95-btn">X</div></div>
-</div>
-<div class="win95-body">
-<div class="calc-history" id="calcHist">&nbsp;</div>
-<div class="calc-display" id="calcDisp">0</div>
-<div class="calc-grid">
-<div class="calc-btn clear" onclick="calcClear()">C</div>
-<div class="calc-btn op" onclick="calcOp('/')">/</div>
-<div class="calc-btn op" onclick="calcOp('*')">*</div>
-<div class="calc-btn op" onclick="calcBackspace()">&lt;</div>
-<div class="calc-btn" onclick="calcNum('7')">7</div>
-<div class="calc-btn" onclick="calcNum('8')">8</div>
-<div class="calc-btn" onclick="calcNum('9')">9</div>
-<div class="calc-btn op" onclick="calcOp('-')">-</div>
-<div class="calc-btn" onclick="calcNum('4')">4</div>
-<div class="calc-btn" onclick="calcNum('5')">5</div>
-<div class="calc-btn" onclick="calcNum('6')">6</div>
-<div class="calc-btn op" onclick="calcOp('+')">+</div>
-<div class="calc-btn" onclick="calcNum('1')">1</div>
-<div class="calc-btn" onclick="calcNum('2')">2</div>
-<div class="calc-btn" onclick="calcNum('3')">3</div>
-<div class="calc-btn eq" onclick="calcEquals()" style="grid-row:span 2">=</div>
-<div class="calc-btn" onclick="calcNum('0')" style="grid-column:span 2">0</div>
-<div class="calc-btn" onclick="calcNum('.')">.</div>
-</div>
-</div>
-</div>
+<!-- WIN95 CALCULATOR -- now on its own page: calculator.html -->
 
-<!-- BOOT SCREEN -->
-<div class="win95-window" id="bootWindow" style="display:none">
-<div class="win95-titlebar">
-<div class="title-text"><span>System Boot</span></div>
-<div class="win95-btn-group"><div class="win95-btn" onclick="document.getElementById('bootWindow').style.display='none'">X</div></div>
-</div>
-<div class="win95-body">
-<div class="boot-screen" id="bootScreen"></div>
-</div>
-</div>
+<!-- WIN95 BOOT -- now on its own page: boot.html -->
 
 <!-- VISITOR COUNTER -->
 <div class="visitor-counter">
@@ -381,19 +285,19 @@ This page is a framework! Future features planned:<br><br>
 <div class="win95-start-menu" id="startMenu" style="display:none;position:fixed;bottom:36px;left:0;background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;z-index:1001;min-width:180px;font-family:'MS Sans Serif',Tahoma,Arial,sans-serif;font-size:12px">
 <div style="padding:4px 8px;background:linear-gradient(90deg,#000080,#1084d0);color:#fff;font-weight:bold">Windows 95</div>
 <div style="padding:4px 0">
-<div class="start-menu-item" onclick="openStartApp('bootWindow')">🖥️ System Boot</div>
-<div class="start-menu-item" onclick="openStartApp('calcWindow')">🔢 Calculator</div>
-<div class="start-menu-item" onclick="openStartApp('notepadWindow')">📝 Notepad</div>
-<div class="start-menu-item" onclick="openStartApp('guestbookWindow')">📖 Guestbook</div>
+<a class="start-menu-item" style="text-decoration:none" href="boot.html">🖥️ System Boot</a>
+<a class="start-menu-item" style="text-decoration:none" href="calculator.html">🔢 Calculator</a>
+<a class="start-menu-item" style="text-decoration:none" href="notepad.html">📝 Notepad</a>
+<a class="start-menu-item" style="text-decoration:none" href="#guestbookWindow">📖 Guestbook</a>
 <div style="border-top:1px solid #808080;border-bottom:1px solid #fff;margin:4px 0"></div>
-<div class="start-menu-item" onclick="this.closest('.win95-start-menu').style.display='none'">❌ Close Menu</div>
+<div class="start-menu-item" onclick="toggleStartMenu()">❌ Close Menu</div>
 </div>
 </div>
 
 <div class="win95-taskbar">
 <div class="start-btn" onclick="toggleStartMenu()"><span class="win-flag">🪟</span> Start</div>
 <div class="taskbar-item active"><span>Netscape</span></div>
-<div class="taskbar-item" onclick="openStartApp('notepadWindow')"><span>Notepad</span></div>
+<a class="taskbar-item" style="text-decoration:none" href="notepad.html"><span>Notepad</span></a>
 <div class="taskbar-clock" id="taskbarClock">12:00 AM</div>
 </div>
 
@@ -485,100 +389,11 @@ function toggleStartMenu(){
 var menu=document.getElementById('startMenu');
 menu.style.display=menu.style.display==='none'?'block':'none';
 }
-function openStartApp(id){
-document.getElementById('startMenu').style.display='none';
-var el=document.getElementById(id);
-if(el)el.style.display='block';
-}
 document.addEventListener('click',function(e){
 if(!e.target.closest('.start-btn')&&!e.target.closest('.win95-start-menu')){
 document.getElementById('startMenu').style.display='none';
 }
 });
-
-// Calculator
-var calcAccum=0,calcPending=null,calcNewNum=true,calcHistText='';
-function calcNum(n){
-var d=document.getElementById('calcDisp');
-if(calcNewNum){d.textContent=n==='.'?'0.':n;calcNewNum=false;}
-else{if(n==='.'&&d.textContent.includes('.'))return;d.textContent+=n;}
-}
-function calcOp(op){
-var d=document.getElementById('calcDisp');
-var v=parseFloat(d.textContent);
-if(calcPending&&!calcNewNum){calcAccum=calcDo(calcAccum,v,calcPending);}
-else{calcAccum=v;}
-calcPending=op;calcNewNum=true;
-calcHistText=calcAccum+' '+op;document.getElementById('calcHist').textContent=calcHistText;
-}
-function calcEquals(){
-if(!calcPending)return;
-var d=document.getElementById('calcDisp');
-var v=parseFloat(d.textContent);
-var result=calcDo(calcAccum,v,calcPending);
-document.getElementById('calcHist').textContent=calcAccum+' '+calcPending+' '+v+' =';
-d.textContent=parseFloat(result.toFixed(10));
-calcAccum=result;calcPending=null;calcNewNum=true;
-}
-function calcDo(a,b,op){
-if(op==='+')return a+b;
-if(op==='-')return a-b;
-if(op==='*')return a*b;
-if(op==='/')return b===0?'Error':a/b;
-return b;
-}
-function calcClear(){
-calcAccum=0;calcPending=null;calcNewNum=true;calcHistText='';
-document.getElementById('calcDisp').textContent='0';
-document.getElementById('calcHist').innerHTML='&nbsp;';
-}
-function calcBackspace(){
-var d=document.getElementById('calcDisp');
-if(d.textContent.length>1){d.textContent=d.textContent.slice(0,-1);}
-else{d.textContent='0';calcNewNum=true;}
-}
-
-// Boot Screen Animation
-function runBootScreen(){
-var el=document.getElementById('bootScreen');
-el.innerHTML='';
-var lines=[
-{t:'Phoenix BIOS 4.0 Release 6.0',cls:'bios-ok'},
-{t:'Copyright 1985-1998 Phoenix Technologies Ltd.',cls:''},
-{t:'',cls:''},
-{t:'Pentium MMX CPU at 233MHz',cls:'bios-ok'},
-{t:'Memory Test: 65536K OK',cls:'bios-ok'},
-{t:'',cls:''},
-{t:'Detecting Primary Master... WD AC24300 4.3GB',cls:'bios-ok'},
-{t:'Detecting Primary Master... CD-ROM 24X',cls:'bios-ok'},
-{t:'',cls:''},
-{t:'Sound Blaster 16 detected at Port 220, IRQ 5',cls:'bios-ok'},
-{t:'3dfx Voodoo 2 detected',cls:'bios-ok'},
-{t:'',cls:''},
-{t:'Starting Windows 95...',cls:'bios-ok'},
-{t:'',cls:''},
-{t:'WARNING: HIMEM.SYS is testing extended memory...done.',cls:'bios-warn'},
-{t:'',cls:''},
-{t:'C:\\WINDOWS>win',cls:'bios-ok'},
-{t:'',cls:''},
-{t:'Welcome to Windows 95',cls:'bios-ok'}
-];
-var i=0;
-function showLine(){
-if(i>=lines.length)return;
-var div=document.createElement('div');
-div.className='bios-line '+(lines[i].cls||'');
-div.textContent=lines[i].t||'\u00A0';
-el.appendChild(div);
-el.scrollTop=el.scrollHeight;
-i++;
-setTimeout(showLine,lines[i-1].t?120+Math.random()*200:80);
-}
-runBootScreen=showLine;
-showLine();
-}
-// Trigger boot screen when page loads
-setTimeout(runBootScreen,1000);
 </script>
 </body>
 </html>

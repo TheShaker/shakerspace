@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator -- dshaker.space/retro</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"MS Sans Serif","Comic Sans MS",Tahoma,Arial,sans-serif;background-color:#000033;background-image:radial-gradient(1px 1px at 10% 20%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 30% 70%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 50% 10%,#ff0 50%,transparent 50%),radial-gradient(1px 1px at 70% 40%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 90% 80%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 15% 90%,#0ff 50%,transparent 50%),radial-gradient(1px 1px at 45% 55%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 65% 25%,#f0f 50%,transparent 50%),radial-gradient(1px 1px at 85% 60%,#fff 50%,transparent 50%),radial-gradient(1px 1px at 25% 45%,#fff 50%,transparent 50%);color:#00ff00;min-height:100vh;overflow-x:hidden}
+.win95-window{border:2px solid;border-color:#dfdfdf #808080 #808080 #dfdfdf;background:#c0c0c0;margin:40px auto;max-width:260px;box-shadow:2px 2px 0 #000}
+.win95-titlebar{background:linear-gradient(90deg,#000080,#1084d0);color:#fff;font-family:"MS Sans Serif",Tahoma,Arial,sans-serif;font-size:13px;font-weight:bold;padding:3px 4px;display:flex;align-items:center;justify-content:space-between;user-select:none}
+.title-text{display:flex;align-items:center;gap:5px}
+.win95-btn-group{display:flex;gap:2px}
+.win95-btn{width:16px;height:14px;background:#c0c0c0;border:1px solid;border-color:#fff #808080 #808080 #fff;font-size:9px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#000}
+.win95-btn:active{border-color:#808080 #fff #fff #808080}
+.win95-body{padding:12px;background:#c0c0c0}
+.calc-history{background:#fff;border:2px solid;border-color:#808080 #fff #fff #808080;padding:4px 8px;font-size:10px;font-family:"Courier New",monospace;color:#888;margin-bottom:4px;min-height:16px;max-height:48px;overflow:hidden}
+.calc-display{background:#fff;border:2px solid;border-color:#808080 #fff #fff #808080;padding:4px 8px;font-size:20px;font-family:"Courier New",monospace;color:#000;text-align:right;margin-bottom:6px;overflow:hidden;white-space:nowrap;min-height:28px}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+.calc-btn{background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;padding:8px 0;font-size:13px;font-family:"MS Sans Serif",Tahoma,Arial,sans-serif;color:#000;cursor:pointer;text-align:center}
+.calc-btn:active{border-color:#808080 #fff #fff #808080}
+.calc-btn.op{background:#d0d0d0}
+.calc-btn.eq{background:#b0b0c0;font-weight:bold}
+.calc-btn.clear{color:#c00}
+.win95-taskbar{position:fixed;bottom:0;left:0;right:0;height:36px;background:#c0c0c0;border-top:2px solid #fff;display:flex;align-items:center;padding:0 4px;z-index:1000;font-family:"MS Sans Serif",Tahoma,Arial,sans-serif;font-size:12px}
+.taskbar-item{padding:3px 12px;margin-left:4px;background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;cursor:pointer;color:#000;display:flex;align-items:center;gap:4px;text-decoration:none}
+.taskbar-item.active{border-color:#808080 #fff #fff #808080;background:#b0b0b0}
+.taskbar-item:hover{background:#d0d0d0}
+.taskbar-clock{margin-left:auto;padding:3px 8px;border:1px solid;border-color:#808080 #fff #fff #808080;background:#c0c0c0;color:#000;font-size:11px}
+.note{color:#ff0;text-align:center;font-size:11px;margin-top:8px}
+@media(max-width:600px){.win95-window{margin:20px auto}}
+</style>
+</head>
+<body>
+
+<div class="win95-window" id="calcWindow">
+<div class="win95-titlebar">
+<div class="title-text"><span>Calculator</span></div>
+<div class="win95-btn-group"><div class="win95-btn">_</div><div class="win95-btn">[]</div><a href="retro.html" class="win95-btn" style="text-decoration:none">X</a></div>
+</div>
+<div class="win95-body">
+<div class="calc-history" id="calcHist">&nbsp;</div>
+<div class="calc-display" id="calcDisp">0</div>
+<div class="calc-grid">
+<div class="calc-btn clear" onclick="calcClear()">C</div>
+<div class="calc-btn op" onclick="calcOp('/')">/</div>
+<div class="calc-btn op" onclick="calcOp('*')">*</div>
+<div class="calc-btn op" onclick="calcBackspace()">&lt;</div>
+<div class="calc-btn" onclick="calcNum('7')">7</div>
+<div class="calc-btn" onclick="calcNum('8')">8</div>
+<div class="calc-btn" onclick="calcNum('9')">9</div>
+<div class="calc-btn op" onclick="calcOp('-')">-</div>
+<div class="calc-btn" onclick="calcNum('4')">4</div>
+<div class="calc-btn" onclick="calcNum('5')">5</div>
+<div class="calc-btn" onclick="calcNum('6')">6</div>
+<div class="calc-btn op" onclick="calcOp('+')">+</div>
+<div class="calc-btn" onclick="calcNum('1')">1</div>
+<div class="calc-btn" onclick="calcNum('2')">2</div>
+<div class="calc-btn" onclick="calcNum('3')">3</div>
+<div class="calc-btn eq" onclick="calcEquals()" style="grid-row:span 2">=</div>
+<div class="calc-btn" onclick="calcNum('0')" style="grid-column:span 2">0</div>
+<div class="calc-btn" onclick="calcNum('.')">.</div>
+</div>
+</div>
+</div>
+
+<div class="note">~*~ Win95 Calculator -- brought to you by 3D acceleration ~*~</div>
+
+<div class="win95-taskbar">
+<a class="taskbar-item" href="retro.html"><span>🪟</span> Retro Zone</a>
+<a class="taskbar-item active" href="calculator.html"><span>🧮</span> Calculator</a>
+<a class="taskbar-item" href="boot.html"><span>🖥️</span> Boot</a>
+<a class="taskbar-item" href="notepad.html"><span>📝</span> Notepad</a>
+<div class="taskbar-clock" id="clock">12:00 AM</div>
+</div>
+
+<script>
+var calcAccum=0,calcPending=null,calcNewNum=true,calcHistText='';
+function calcNum(n){
+var d=document.getElementById('calcDisp');
+if(calcNewNum){d.textContent=n==='.'?'0.':n;calcNewNum=false;}
+else{if(n==='.'&&d.textContent.includes('.'))return;d.textContent+=n;}
+}
+function calcOp(op){
+var d=document.getElementById('calcDisp');
+var v=parseFloat(d.textContent);
+if(calcPending&&!calcNewNum){calcAccum=calcDo(calcAccum,v,calcPending);}
+else{calcAccum=v;}
+calcPending=op;calcNewNum=true;
+calcHistText=calcAccum+' '+op;document.getElementById('calcHist').textContent=calcHistText;
+}
+function calcEquals(){
+if(!calcPending)return;
+var d=document.getElementById('calcDisp');
+var v=parseFloat(d.textContent);
+var result=calcDo(calcAccum,v,calcPending);
+document.getElementById('calcHist').textContent=calcAccum+' '+calcPending+' '+v+' =';
+d.textContent=parseFloat(result.toFixed(10));
+calcAccum=result;calcPending=null;calcNewNum=true;
+}
+function calcDo(a,b,op){
+if(op==='+')return a+b;
+if(op==='-')return a-b;
+if(op==='*')return a*b;
+if(op==='/')return b===0?'Error':a/b;
+return b;
+}
+function calcClear(){
+calcAccum=0;calcPending=null;calcNewNum=true;calcHistText='';
+document.getElementById('calcDisp').textContent='0';
+document.getElementById('calcHist').innerHTML='&nbsp;';
+}
+function calcBackspace(){
+var d=document.getElementById('calcDisp');
+if(d.textContent.length>1){d.textContent=d.textContent.slice(0,-1);}
+else{d.textContent='0';calcNewNum=true;}
+}
+function updateClock(){
+var now=new Date();
+var h=now.getHours();
+var m=now.getMinutes().toString().padStart(2,'0');
+var ampm=h>=12?'PM':'AM';
+h=h%12||12;
+document.getElementById('clock').textContent=h+':'+m+' '+ampm;
+}
+updateClock();
+setInterval(updateClock,30000);
+</script>
+</body>
+</html>
