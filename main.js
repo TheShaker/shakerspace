@@ -97,7 +97,6 @@ function thock() {
       const cmds = [
         'Available commands:',
         '  <span class="clih">EGG</span>      — Easter Egg Laboratory',
-        '  <span class="clih">WHOIS</span>   — Contact / identity',
         '  <span class="clih">STATUS</span>  — System status',
         '  <span class="clih">USERS</span>   — List known users',
         '  <span class="clih">LOGIN</span>   — Authenticate (LOGIN &lt;user&gt;)',
@@ -144,8 +143,6 @@ function thock() {
     },
     EGG: () => { location.href = 'eggs.html'; return ['Navigating to Egg Laboratory...']; },
     RETRO: () => { location.href = 'retro.html'; return ['Entering the Retro Zone...']; },
-    WHOIS: () => { location.href = 'contact.html'; return ['Loading identity records...']; },
-
     STATUS: () => [
       '<span class="clis">● ALL SYSTEMS NOMINAL</span>',
       '  uptime: ∞',
@@ -226,49 +223,6 @@ themeBtn.addEventListener('click', () => {
   document.body.classList.toggle('light');
   themeBtn.textContent = document.body.classList.contains('light') ? '\u2600\uFE0F' : '\uD83C\uDF19';
 });
-
-// Contact form submit -> POST /api/contact
-(function() {
-  const form = document.getElementById('contactForm');
-  if (!form) return;
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const status = document.getElementById('contactStatus');
-    const btn = form.querySelector('button[type=submit]');
-    const setStatus = (msg, cls) => { status.textContent = msg; status.className = 'cfst ' + (cls || ''); };
-    const payload = {
-      name: form.cfName.value.trim(),
-      email: form.cfEmail.value.trim(),
-      subject: form.cfSubject.value.trim(),
-      message: form.cfMsg.value.trim(),
-      website: form.cfWebsite.value.trim(), // honeypot — keep empty
-    };
-    if (!payload.name || !payload.email || !payload.message) {
-      setStatus('Please fill in name, email, and message.', 'err');
-      return;
-    }
-    btn.disabled = true;
-    setStatus('Transmitting…');
-    try {
-      const r = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const d = await r.json().catch(() => ({}));
-      if (r.ok && d.ok) {
-        setStatus('✅ Message transmitted. Thanks for reaching out!', 'ok');
-        form.reset();
-      } else {
-        setStatus(d.error || 'Something went wrong. Try again?', 'err');
-      }
-    } catch {
-      setStatus('Network error — could not reach the transmitter.', 'err');
-    } finally {
-      btn.disabled = false;
-    }
-  });
-})();
 
 // Auto-init feature pages when main.js runs on them
 (function() {
