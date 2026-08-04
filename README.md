@@ -12,6 +12,7 @@ Galaxy-themed personal site, deployed on [Cloudflare Pages](https://pages.cloudf
 | `dashboard.html` | System status cards (live via Pages Function `/api/services/status`) |
 | `eggs.html` | Easter-egg laboratory (client-side endpoints) |
 | `files.html` | File browser UI (backed by `/api/files`, R2 pending) |
+| `contact.html` | Ways to reach the mothership (mailto button — no backend) |
 | `retro.html` | The Retro Zone — Win95 + Geocities nostalgia page |
 | `404.html` | Themed lost-in-space 404 |
 | `styles.css` | All styling — galaxy theme, light/dark mode |

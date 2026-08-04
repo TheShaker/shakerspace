@@ -125,8 +125,16 @@ h1.title{font-family:'Orbitron',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font
 .fd:hover,.fd.drag{border-color:var(--n-purple);background:rgba(123,47,247,.05);color:var(--t2)}
 .fd .di{font-size:1.5rem;display:block;margin-bottom:.5rem}
 
-/* Contact (removed) */
+/* Contact */
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem}
+.cc{background:var(--c-bg);border:1px solid var(--c-bdr);border-radius:16px;padding:2rem;text-align:center;transition:all .3s}
+.cc:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(123,47,247,.1)}
+.cc .cci{font-size:2rem;margin-bottom:1rem}
+.cc .ccl{font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:.5rem}
+.cc .ccv{font-size:.9rem}
+.cc a{color:var(--n-blue);text-decoration:none;transition:color .2s}.cc a:hover{color:var(--n-purple)}
 .wb{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .8rem;background:rgba(123,47,247,.1);border:1px solid rgba(123,47,247,.2);border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--n-purple);margin-top:.8rem}
+
 /* Effects */
 .shoot{position:fixed;width:2px;height:2px;background:white;border-radius:50%;box-shadow:0 0 6px 2px rgba(255,255,255,.6);z-index:0;pointer-events:none;animation:sh linear forwards}
 .shoot::after{content:'';position:absolute;top:0;left:0;width:80px;height:1px;background:linear-gradient(to left,rgba(255,255,255,.8),transparent);transform-origin:left center;transform:rotate(-26.6deg)}

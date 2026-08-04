@@ -97,6 +97,7 @@ function thock() {
       const cmds = [
         'Available commands:',
         '  <span class="clih">EGG</span>      — Easter Egg Laboratory',
+        '  <span class="clih">WHOIS</span>   — Contact / identity',
         '  <span class="clih">STATUS</span>  — System status',
         '  <span class="clih">USERS</span>   — List known users',
         '  <span class="clih">LOGIN</span>   — Authenticate (LOGIN &lt;user&gt;)',
@@ -143,6 +144,8 @@ function thock() {
     },
     EGG: () => { location.href = 'eggs.html'; return ['Navigating to Egg Laboratory...']; },
     RETRO: () => { location.href = 'retro.html'; return ['Entering the Retro Zone...']; },
+    WHOIS: () => { location.href = 'contact.html'; return ['Loading identity records...']; },
+
     STATUS: () => [
       '<span class="clis">● ALL SYSTEMS NOMINAL</span>',
       '  uptime: ∞',
