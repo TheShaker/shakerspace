@@ -120,6 +120,7 @@ h1.title{font-family:'Orbitron',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font
 .fab:hover{background:var(--c-bg);border-color:var(--c-bdr);color:var(--t1)}
 .fab.del:hover{background:rgba(239,68,68,.1);color:var(--err)}
 .femp{text-align:center;padding:3rem;color:var(--t3);font-size:.9rem}.femp .ei{font-size:2.5rem;margin-bottom:1rem;display:block}
+.fnote{padding:1rem 1.2rem;color:var(--t3);font-size:.78rem;line-height:1.5;border-top:1px solid var(--c-bdr)}
 .fd{border:2px dashed var(--c-bdr);border-radius:12px;padding:2rem;text-align:center;color:var(--t3);font-size:.85rem;margin-top:1rem;transition:all .3s;cursor:pointer}
 .fd:hover,.fd.drag{border-color:var(--n-purple);background:rgba(123,47,247,.05);color:var(--t2)}
 .fd .di{font-size:1.5rem;display:block;margin-bottom:.5rem}

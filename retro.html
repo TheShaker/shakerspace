@@ -452,11 +452,16 @@ function signGuestbook(){
 var name=document.getElementById('gbName').value.trim();
 var msg=document.getElementById('gbMsg').value.trim();
 if(!name||!msg){alert('Please fill in both fields!! (just like 1998)');return;}
+// Build with textContent so user input can't inject HTML/script (XSS-safe)
 var entry=document.createElement('div');
 entry.className='guestbook-entry';
 var now=new Date();
 var dateStr=(now.getMonth()+1).toString().padStart(2,'0')+'/'+now.getDate().toString().padStart(2,'0')+'/'+now.getFullYear();
-entry.innerHTML='<span class="gb-name">'+name+'</span><span class="gb-date">'+dateStr+'</span><div class="gb-msg">'+msg+'</div><div class="gb-sig">-- posted from '+navigator.userAgent.split(' ')[0]+'</div>';
+var n=document.createElement('span');n.className='gb-name';n.textContent=name;
+var dt=document.createElement('span');dt.className='gb-date';dt.textContent=dateStr;
+var m=document.createElement('div');m.className='gb-msg';m.textContent=msg;
+var sig=document.createElement('div');sig.className='gb-sig';sig.textContent='-- posted from '+navigator.userAgent.split(' ')[0];
+entry.appendChild(n);entry.appendChild(dt);entry.appendChild(m);entry.appendChild(sig);
 var form=document.querySelector('.gb-form');
 form.parentNode.insertBefore(entry,form);
 document.getElementById('gbName').value='';

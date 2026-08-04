@@ -138,7 +138,9 @@ function thock() {
     },
     INFO: () => {
       if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
-      return ['System intel:', '  hostname: sputnik', '  os: Raspberry Pi OS (bookworm)', '  arch: aarch64', '  clearance: <span class="clis">ROOT</span>'];
+      // Note: this terminal is 100% client-side flavor. There is no real
+      // backend, no root shell, and no Pi here — it's a fictional demo.
+      return ['System intel (themed demo):', '  hostname: dshaker.space', '  platform: Cloudflare Pages (static)', '  runtime: your browser', '  clearance: <span class="clis">guest</span>', '  state: <span class="clis">cosmic and chill</span>'];
     },
     EGG: () => { location.href = 'eggs.html'; return ['Navigating to Egg Laboratory...']; },
     RETRO: () => { location.href = 'retro.html'; return ['Entering the Retro Zone...']; },
@@ -171,7 +173,9 @@ function thock() {
     // Password prompt intercept
     if (loginState && loginState.user === 'SYSADMIN') {
       loginState = null;
-      if (rawCmd === 'ROOT123') {
+      // Fictional easter-egg credential for a client-side gag terminal.
+      // It is NOT a real secret — never treat client-side auth as security.
+      if (rawCmd === 'THEHAT') {
         loggedIn = true;
         appendLine('<span class="clis">\u2713 ACCESS GRANTED</span> — Welcome, SYSADMIN.');
         appendLine('  Type <span class="clih">HELP</span> for new commands.');
@@ -222,6 +226,15 @@ themeBtn.addEventListener('click', () => {
   document.body.classList.toggle('light');
   themeBtn.textContent = document.body.classList.contains('light') ? '\u2600\uFE0F' : '\uD83C\uDF19';
 });
+
+// Auto-init feature pages when main.js runs on them
+(function() {
+  if (document.getElementById('fileList')) refreshFiles();
+  if (document.getElementById('dashGrid')) {
+    refreshDash();
+    setInterval(refreshDash, 30000);
+  }
+})();
 
 // Smooth scroll (sub-pages with anchor targets)
 document.querySelectorAll('a.nb').forEach(b => {
@@ -416,9 +429,74 @@ function doDialUpload(file) {
   }, 600);
 }
 
-// File browser
-function refreshFiles() { /* TODO: GET /api/files */ }
-function toggleSort() { /* TODO: sort logic */ }
+// File browser — backed by Cloudflare Pages Function /api/files
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+async function refreshFiles() {
+  const list = document.getElementById('fileList');
+  if (!list) return;
+  list.innerHTML = '<div class="femp"><span class="ei">⏳</span>Loading…</div>';
+  try {
+    const r = await fetch('/api/files');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    const files = d.files || [];
+    list.innerHTML = '';
+    if (!files.length) {
+      const empty = document.createElement('div');
+      empty.className = 'femp';
+      empty.innerHTML = '<span class="ei">📭</span>No files yet — upload something';
+      list.appendChild(empty);
+      if (d.note) {
+        const note = document.createElement('div');
+        note.className = 'fnote';
+        note.textContent = d.note;
+        list.appendChild(note);
+      }
+    } else {
+      files.forEach(f => {
+        const row = document.createElement('div');
+        row.className = 'fr';
+        const icon = document.createElement('span');
+        icon.className = 'fi'; icon.textContent = '📄';
+        const nm = document.createElement('span');
+        nm.className = 'fn'; nm.textContent = f.name || '';
+        const sz = document.createElement('span');
+        sz.className = 'fsz'; sz.textContent = f.size || '';
+        const act = document.createElement('span');
+        act.className = 'fa';
+        const dl = document.createElement('a');
+        dl.className = 'fab'; dl.textContent = '⬇'; dl.href = f.url || '#'; dl.download = true;
+        act.appendChild(dl);
+        [icon, nm, sz, act].forEach(x => row.appendChild(x));
+        list.appendChild(row);
+      });
+    }
+  } catch (e) {
+    list.innerHTML = '';
+    const err = document.createElement('div');
+    err.className = 'femp';
+    err.innerHTML = '<span class="ei">⚠️</span>Cannot reach file API (not deployed)';
+    list.appendChild(err);
+  }
+}
+
+let filesSortAsc = true;
+function toggleSort() {
+  const list = document.getElementById('fileList');
+  if (!list) return;
+  const rows = Array.from(list.querySelectorAll('.frow'));
+  if (!rows.length) return;
+  filesSortAsc = !filesSortAsc;
+  rows.sort((a, b) => {
+    const x = a.querySelector('.fn').textContent;
+    const y = b.querySelector('.fn').textContent;
+    return filesSortAsc ? x.localeCompare(y) : y.localeCompare(x);
+  });
+  rows.forEach(r => list.appendChild(r));
+}
 
 // Upload modal
 function openUpload() { document.getElementById('uploadModal').classList.add('act'); }

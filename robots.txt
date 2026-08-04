@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# This is a static, fully public site — nothing to hide from crawlers.
