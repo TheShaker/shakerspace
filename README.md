@@ -29,6 +29,24 @@ at `functions/` and map 1:1 to URL paths.
 |---|---|---|
 | `GET /api/services/status` | `functions/api/services/status.js` | ✅ Live — powers the dashboard |
 | `GET /api/files` | `functions/api/files/index.js` | ✅ Live (empty list) — see below to enable uploads |
+| `POST /api/contact` | `functions/api/contact.js` | ✅ Live — powers the contact form (needs keys below) |
+
+### Contact form setup
+
+The contact form sends messages to your inbox via [Resend](https://resend.com)
+(free tier). Add these **secret environment variable bindings** in the Cloudflare
+dashboard (Pages project → **Settings → Bindings → Environment variables**, set
+for Production). They are secrets — never commit them to this repo:
+
+| Variable | Purpose |
+|---|---|
+| `RESEND_API_KEY` | Your Resend API key (e.g. `re_...`) |
+| `CONTACT_TO` | The email address that receives submissions |
+| `CONTACT_FROM` | Optional sender address (default `onboarding@resend.dev`) |
+
+Until `RESEND_API_KEY` + `CONTACT_TO` are set, submissions return a clear
+"not configured" message instead of failing silently. The form also includes a
+hidden honeypot field to deflect bots.
 
 ### Enabling real file uploads (R2)
 

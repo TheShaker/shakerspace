@@ -18,12 +18,39 @@
 
 <section class="sec" id="contact">
   <h2 class="st">📡 Connect</h2>
-  <p class="ss">Ways to reach the mothership</p>
-  <div class="cg">
+  <p class="ss">Signal the mothership — this goes straight to my inbox</p>
+  <div class="cg" style="margin-bottom:2rem">
     <div class="cc"><div class="cci">🌐</div><div class="ccl">Domain</div><div class="ccv">dshaker.space</div></div>
-    <div class="cc"><div class="cci">📧</div><div class="ccl">Email</div><div class="ccv"><a href="mailto:shaker.bot@gmail.com">shaker.bot@gmail.com</a></div></div>
     <div class="cc"><div class="cci">⚙️</div><div class="ccl">Platform</div><div class="ccv">Cloudflare Pages<div class="wb">🟢 Live</div></div></div>
+    <div class="cc"><div class="cci">🛰️</div><div class="ccl">Status</div><div class="ccv">All systems nominal</div></div>
   </div>
+
+  <form class="cf" id="contactForm" novalidate>
+    <div class="cfgrid">
+      <div class="cfcell">
+        <label class="cfl" for="cfName">Name</label>
+        <input class="cfi" id="cfName" name="name" type="text" required autocomplete="name" placeholder="Who are you?">
+      </div>
+      <div class="cfcell">
+        <label class="cfl" for="cfEmail">Email</label>
+        <input class="cfi" id="cfEmail" name="email" type="email" required autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="cfcell" style="grid-column:1/-1">
+        <label class="cfl" for="cfSubject">Subject</label>
+        <input class="cfi" id="cfSubject" name="subject" type="text" placeholder="What's it about? (optional)">
+      </div>
+      <div class="cfcell" style="grid-column:1/-1">
+        <label class="cfl" for="cfMsg">Message</label>
+        <textarea class="cfi cfta" id="cfMsg" name="message" rows="5" required placeholder="Beam your message down..."></textarea>
+      </div>
+    </div>
+    <!-- Honeypot: hidden from humans, bots fill it. Leave blank. -->
+    <input class="cfhp" id="cfWebsite" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div class="cfsub">
+      <button class="mb go" type="submit">📡 Transmit</button>
+      <div class="cfst" id="contactStatus" role="status"></div>
+    </div>
+  </form>
 </section>
 
 <script src="main.js"></script>
