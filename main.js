@@ -143,7 +143,7 @@ function thock() {
       return ['System intel (themed demo):', '  hostname: dshaker.space', '  platform: Cloudflare Pages (static)', '  runtime: your browser', '  clearance: <span class="clis">guest</span>', '  state: <span class="clis">cosmic and chill</span>'];
     },
     EGG: () => { location.href = 'eggs.html'; return ['Navigating to Egg Laboratory...']; },
-    RETRO: () => { location.href = 'retro.html'; return ['Entering the Retro Zone...']; },
+    RETRO: () => { location.href = '/retro/BOOT'; return ['Booting into the Retro Zone...']; },
     WHOIS: () => { location.href = 'contact.html'; return ['Loading identity records...']; },
 
     STATUS: () => [

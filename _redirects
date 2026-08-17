@@ -1,0 +1,3 @@
+/retro/BOOT      /retro/boot.html   200
+/retro.html      /retro/            301
+/boot.html       /retro/BOOT        301

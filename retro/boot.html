@@ -33,20 +33,20 @@ body{font-family:"MS Sans Serif","Comic Sans MS",Tahoma,Arial,sans-serif;backgro
 <div class="win95-window" id="bootWindow">
 <div class="win95-titlebar">
 <div class="title-text"><span>System Boot</span></div>
-<div class="win95-btn-group"><a href="retro.html" class="win95-btn">X</a></div>
+<div class="win95-btn-group"><a href="/retro/" class="win95-btn">X</a></div>
 </div>
 <div class="win95-body">
 <div class="boot-screen" id="bootScreen"></div>
 </div>
 </div>
 
-<div class="note">~*~ press any key to continue... (or just watch) ~*~</div>
+<div class="note">~*~ starting Windows... booting into the Retro Zone ~*~</div>
 
 <div class="win95-taskbar">
-<a class="taskbar-item" href="retro.html"><span>🪟</span> Retro Zone</a>
-<a class="taskbar-item" href="calculator.html"><span>🧮</span> Calculator</a>
-<a class="taskbar-item active" href="boot.html"><span>🖥️</span> Boot</a>
-<a class="taskbar-item" href="notepad.html"><span>📝</span> Notepad</a>
+<a class="taskbar-item" href="/retro/"><span>🪟</span> Retro Zone</a>
+<a class="taskbar-item" href="../calculator.html"><span>🧮</span> Calculator</a>
+<a class="taskbar-item active" href="/retro/BOOT"><span>🖥️</span> Boot</a>
+<a class="taskbar-item" href="../notepad.html"><span>📝</span> Notepad</a>
 <div class="taskbar-clock" id="clock">12:00 AM</div>
 </div>
 
@@ -73,8 +73,10 @@ var lines=[
 {t:'Welcome to Windows 95',cls:'bios-ok'}
 ];
 var i=0;
+var booted=false;
+function gotoRetro(){if(booted)return;booted=true;location.href='/retro/';}
 function showLine(){
-if(i>=lines.length)return;
+if(i>=lines.length){setTimeout(gotoRetro,2200);return;}
 var el=document.getElementById('bootScreen');
 var div=document.createElement('div');
 div.className='bios-line '+(lines[i].cls||'');
@@ -85,6 +87,7 @@ i++;
 setTimeout(showLine,lines[i-1].t?120+Math.random()*200:80);
 }
 setTimeout(showLine,800);
+document.addEventListener('keydown',gotoRetro);
 
 function updateClock(){
 var now=new Date();
