@@ -74,10 +74,6 @@ body{font-family:"Comic Sans MS","Comic Sans","MS Sans Serif",Tahoma,Arial,sans-
 .badge-ns{border-color:#fff #008000 #008000 #fff;background:#004400;color:#fff}
 .badge-ie{border-color:#fff #000080 #000080 #fff;background:#000066;color:#fff}
 .win95-taskbar{position:fixed;bottom:0;left:0;right:0;height:36px;background:#c0c0c0;border-top:2px solid #fff;display:flex;align-items:center;padding:0 4px;z-index:1000;font-family:"MS Sans Serif",Tahoma,Arial,sans-serif;font-size:12px}
-.start-menu-item{padding:4px 12px;cursor:pointer;color:#000}
-.start-menu-item:hover{background:#000080;color:#fff}
-.start-btn{padding:3px 8px;background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;font-weight:bold;cursor:pointer;display:flex;align-items:center;gap:4px;color:#000}
-.start-btn:active{border-color:#808080 #fff #fff #808080}
 .taskbar-item{padding:3px 12px;margin-left:4px;background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;cursor:pointer;color:#000;display:flex;align-items:center;gap:4px}
 .taskbar-item.active{border-color:#808080 #fff #fff #808080;background:#b0b0b0}
 .taskbar-clock{margin-left:auto;padding:3px 8px;border:1px solid;border-color:#808080 #fff #fff #808080;background:#c0c0c0;color:#000;font-size:11px}
@@ -160,13 +156,13 @@ body{font-family:"Comic Sans MS","Comic Sans","MS Sans Serif",Tahoma,Arial,sans-
 <div class="content-section">
 <h2>cOoL LiNkS</h2>
 <table class="cool-links">
-<tr><td>Globe</td><td><a href="https://www.geocities.com" target="_blank">GeoCities</a> -- Build your OWN free homepage!</td></tr>
-<tr><td>Magnifier</td><td><a href="https://www.altavista.com" target="_blank">AltaVista</a> -- The best search engine on the web!</td></tr>
-<tr><td>Email</td><td><a href="https://www.hotmail.com" target="_blank">Hotmail</a> -- Free email! (wow!!)</td></tr>
-<tr><td>Game</td><td><a href="https://www.gamespot.com" target="_blank">GameSpot</a> -- cheat codes and walkthroughs</td></tr>
-<tr><td>Computer</td><td><a href="https://slashdot.org" target="_blank">Slashdot</a> -- News for nerds, stuff that matters</td></tr>
-<tr><td>UFO</td><td><a href="https://www.nasa.gov" target="_blank">NASA</a> -- Space is cool (trust me)</td></tr>
-<tr><td>Star</td><td><a href="index.html">dshaker.space Mission Control</a> -- The futuristic version</td></tr>
+<tr><td>Globe</td><td><span style="color:#0ff">GeoCities</span> -- Build your OWN free homepage!</td></tr>
+<tr><td>Magnifier</td><td><span style="color:#0ff">AltaVista</span> -- The best search engine on the web!</td></tr>
+<tr><td>Email</td><td><span style="color:#0ff">Hotmail</span> -- Free email! (wow!!)</td></tr>
+<tr><td>Game</td><td><span style="color:#0ff">GameSpot</span> -- cheat codes and walkthroughs</td></tr>
+<tr><td>Computer</td><td><span style="color:#0ff">Slashdot</span> -- News for nerds, stuff that matters</td></tr>
+<tr><td>UFO</td><td><span style="color:#0ff">NASA</span> -- Space is cool (trust me)</td></tr>
+<tr><td>Star</td><td><span style="color:#0ff">dshaker.space Mission Control</span> -- The futuristic version</td></tr>
 </table>
 </div>
 
@@ -281,23 +277,12 @@ This page is a framework! Future features planned:<br><br>
 </div><!-- end retro-main -->
 
 <!-- WIN95 TASKBAR -->
-<!-- START MENU -->
-<div class="win95-start-menu" id="startMenu" style="display:none;position:fixed;bottom:36px;left:0;background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;z-index:1001;min-width:180px;font-family:'MS Sans Serif',Tahoma,Arial,sans-serif;font-size:12px">
-<div style="padding:4px 8px;background:linear-gradient(90deg,#000080,#1084d0);color:#fff;font-weight:bold">Windows 95</div>
-<div style="padding:4px 0">
-<a class="start-menu-item" style="text-decoration:none" href="boot.html">🖥️ System Boot</a>
-<a class="start-menu-item" style="text-decoration:none" href="calculator.html">🔢 Calculator</a>
-<a class="start-menu-item" style="text-decoration:none" href="notepad.html">📝 Notepad</a>
-<a class="start-menu-item" style="text-decoration:none" href="#guestbookWindow">📖 Guestbook</a>
-<div style="border-top:1px solid #808080;border-bottom:1px solid #fff;margin:4px 0"></div>
-<div class="start-menu-item" onclick="toggleStartMenu()">❌ Close Menu</div>
-</div>
-</div>
-
 <div class="win95-taskbar">
-<div class="start-btn" onclick="toggleStartMenu()"><span class="win-flag">🪟</span> Start</div>
-<div class="taskbar-item active"><span>Netscape</span></div>
-<a class="taskbar-item" style="text-decoration:none" href="notepad.html"><span>Notepad</span></a>
+<div class="taskbar-item active"><span>🌐 Netscape</span></div>
+<a class="taskbar-item" style="text-decoration:none" href="boot.html"><span>🖥️ System Boot</span></a>
+<a class="taskbar-item" style="text-decoration:none" href="notepad.html"><span>📝 Notepad</span></a>
+<a class="taskbar-item" style="text-decoration:none" href="calculator.html"><span>🔢 Calculator</span></a>
+<a class="taskbar-item" style="text-decoration:none" href="#guestbookWindow"><span>📖 Guestbook</span></a>
 <div class="taskbar-clock" id="taskbarClock">12:00 AM</div>
 </div>
 
@@ -326,29 +311,66 @@ s.style.transform='translateY(-20px) scale(0.3)';
 setTimeout(function(){s.remove();},900);
 });
 
-var midiSongs=['finalcountdown.mid','sandstorm.mid','axelf.mid','takeOnMe.mid','neverGonna.mid'];
-var midiIdx=0;
-var midiPlaying=false;
+// Retro MIDI jukebox -- real chiptune via Web Audio (no asset files needed)
+var ACTX=window.AudioContext||window.webkitAudioContext;
+var actx=null,timer=null,nextNote=0,curStep=0,songIdx=0,playing=false;
+function mtof(m){return 440*Math.pow(2,(m-69)/12);}
+function tone(freq,t,dur,wave,gain){
+var o=actx.createOscillator(),g=actx.createGain();
+o.type=wave;o.frequency.value=freq;
+o.connect(g);g.connect(actx.destination);
+g.gain.setValueAtTime(0.0001,t);
+g.gain.exponentialRampToValueAtTime(gain,t+0.012);
+g.gain.setValueAtTime(gain,t+dur*0.65);
+g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+o.start(t);o.stop(t+dur+0.05);
+}
+var midiSongs=[
+{name:'finalcountdown.mid',bpm:112,melody:[[55,.5],[58,.5],[60,.5],[63,.5],[67,1],[67,.5],[67,.5],[63,.5],[67,1],[70,1],[67,.5],[63,1],[60,.5],[63,.5],[62,1]]},
+{name:'sandstorm.mid',bpm:138,melody:[[45,.25],[48,.25],[45,.25],[48,.25],[43,.25],[46,.25],[43,.25],[46,.25],[45,.25],[48,.25],[45,.25],[48,.25],[50,.5],[48,.5]]},
+{name:'axelf.mid',bpm:120,melody:[[60,.25],[60,.25],[60,.25],[60,.25],[62,.25],[60,.25],[62,.25],[64,.5],[65,.25],[64,.25],[62,.25],[60,.25],[62,.5],[60,.5],[57,.5]]},
+{name:'takeOnMe.mid',bpm:118,melody:[[69,.5],[68,.5],[66,.5],[64,.5],[66,1],[66,.5],[64,.5],[63,.5],[61,.5],[63,1]]},
+{name:'neverGonna.mid',bpm:122,melody:[[67,.5],[67,.5],[64,.5],[67,.5],[69,.5],[68,.5],[66,.5],[64,.5],[62,1]]}
+];
+function schedule(){
+if(!actx)return;
+var s=midiSongs[songIdx],spb=60/s.bpm;
+while(nextNote<actx.currentTime+0.25){
+var i=curStep%s.melody.length;
+var n=s.melody[i];
+var start=nextNote,dur=n[1]*spb;
+tone(mtof(n[0]),start,dur,'square',0.10);
+tone(mtof(n[0]-12),start,dur,'triangle',0.05);
+nextNote+=dur;curStep++;
+}
+}
+function startAudio(){
+if(!actx)actx=new ACTX();
+if(actx.state==='suspended')actx.resume();
+nextNote=actx.currentTime+0.05;
+if(!timer)timer=setInterval(schedule,25);
+}
+function stopAudio(){
+clearInterval(timer);timer=null;
+playing=false;nextNote=0;curStep=0;
+}
+function setSong(i){
+songIdx=(i+midiSongs.length)%midiSongs.length;
+document.getElementById('midiSong').textContent=midiSongs[songIdx].name;
+if(playing){nextNote=actx.currentTime+0.05;curStep=0;}
+}
 function midiAction(a){
 var status=document.getElementById('midiStatus');
-var song=document.getElementById('midiSong');
 var btn=document.getElementById('midiPlayBtn');
 if(a=='play'){
-midiPlaying=!midiPlaying;
-btn.textContent=midiPlaying?'||':'>';
-status.textContent=midiPlaying?'Playing: '+midiSongs[midiIdx]:'MIDI FM Synthesis Ready';
+if(!playing){startAudio();playing=true;btn.textContent='||';status.textContent='Playing: '+midiSongs[songIdx].name;}
+else{stopAudio();btn.textContent='>';status.textContent='MIDI FM Synthesis Ready';}
 }else if(a=='stop'){
-midiPlaying=false;
-btn.textContent='>';
-status.textContent='MIDI FM Synthesis Ready';
+stopAudio();btn.textContent='>';status.textContent='MIDI FM Synthesis Ready';
 }else if(a=='next'){
-midiIdx=(midiIdx+1)%midiSongs.length;
-song.textContent=midiSongs[midiIdx];
-if(midiPlaying)status.textContent='Playing: '+midiSongs[midiIdx];
+setSong(songIdx+1);if(playing)status.textContent='Playing: '+midiSongs[songIdx].name;
 }else if(a=='prev'){
-midiIdx=(midiIdx-1+midiSongs.length)%midiSongs.length;
-song.textContent=midiSongs[midiIdx];
-if(midiPlaying)status.textContent='Playing: '+midiSongs[midiIdx];
+setSong(songIdx-1);if(playing)status.textContent='Playing: '+midiSongs[songIdx].name;
 }
 }
 
@@ -383,17 +405,6 @@ document.getElementById('taskbarClock').textContent=h+':'+m+' '+ampm;
 }
 updateClock();
 setInterval(updateClock,30000);
-
-// Start Menu
-function toggleStartMenu(){
-var menu=document.getElementById('startMenu');
-menu.style.display=menu.style.display==='none'?'block':'none';
-}
-document.addEventListener('click',function(e){
-if(!e.target.closest('.start-btn')&&!e.target.closest('.win95-start-menu')){
-document.getElementById('startMenu').style.display='none';
-}
-});
 </script>
 </body>
 </html>
