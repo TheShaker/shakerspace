@@ -80,13 +80,6 @@ body{font-family:"Comic Sans MS","Comic Sans","MS Sans Serif",Tahoma,Arial,sans-
 .geocities-tile{position:fixed;top:0;left:0;right:0;bottom:36px;pointer-events:none;z-index:-1}
 .sparkle-trail{position:fixed;pointer-events:none;z-index:9999;font-size:10px}
 @media(max-width:600px){.geo-header h1{font-size:22px}.win95-window{margin:8px}.badge-row{gap:6px}.about-table td{display:block;width:100%}.about-table .avatar-cell{width:100%;margin-bottom:8px}}
-/* Sound unlock gate */
-.sound-gate{position:fixed;inset:0;background:rgba(0,0,20,.88);z-index:2000;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'MS Sans Serif',Tahoma,Arial,sans-serif;text-align:center}
-.sound-gate.hidden{display:none}
-.sg-card{max-width:360px;padding:26px 30px;background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;box-shadow:2px 2px 0 #000;color:#000}
-.sg-icon{font-size:52px;animation:ucBob 1s ease-in-out infinite}
-.sg-title{font-size:17px;font-weight:bold;margin:10px 0 4px;color:#0000a0}
-.sg-sub{font-size:12px;color:#333;line-height:1.5}
 /* Now-playing equalizer */
 .eq{display:none;justify-content:center;align-items:flex-end;gap:3px;height:16px;padding-top:6px}
 .eq.on{display:flex}
@@ -107,13 +100,6 @@ body{cursor:url("data:image/svg+xml;utf8,%3Csvg%20xmlns='http://www.w3.org/2000/
 </head>
 <body>
 <div class="geocities-tile"></div>
-<div class="sound-gate" id="soundGate">
-<div class="sg-card">
-<div class="sg-icon">🔊</div>
-<div class="sg-title">♪ This page has <span class="blink">SOUND</span> ♪</div>
-<div class="sg-sub">Click anywhere to boot up the retro MIDI jukebox.<br>(1998 style -- it does NOT wait politely)</div>
-</div>
-</div>
 <div class="rainbow-bar">
 <marquee scrollamount="4">Welcome to dshaker.space/RETRO -- Best viewed at 800x600 with 256 colors! -- Sign My Guestbook!!</marquee>
 </div>
@@ -154,7 +140,7 @@ body{cursor:url("data:image/svg+xml;utf8,%3Csvg%20xmlns='http://www.w3.org/2000/
 <h2>** AbOuT mE **</h2>
 <table class="about-table">
 <tr>
-<td class="avatar-cell"><div class="avatar-box">:rocket:</div><br><span style="color:#ff0;font-size:11px">that is me!!</span></td>
+<td class="avatar-cell"><div class="avatar-box">🗿</div><br><span style="color:#ff0;font-size:11px">that is me!!</span></td>
 <td>
 <span style="color:#ff0">Name:</span> Shaker<br>
 <span style="color:#ff0">Location:</span> Rhode Island, USA<br>
@@ -174,7 +160,7 @@ body{cursor:url("data:image/svg+xml;utf8,%3Csvg%20xmlns='http://www.w3.org/2000/
 <div class="content-section">
 <h2>WhAtS nEw</h2>
 <ul>
-<li><span class="blink" style="color:#f00">NEW!</span> Win95 apps got their own pages -- <a href="../calculator.html" style="color:#0ff">Calculator</a>, <a href="../notepad.html" style="color:#0ff">Notepad</a>, <a href="/retro/BOOT" style="color:#0ff">System Boot</a>!</li>
+<li><span class="blink" style="color:#f00">NEW!</span> Win95 apps got their own pages -- <a href="/retro/calc" style="color:#0ff">Calculator</a>, <a href="/retro/notes" style="color:#0ff">Notepad</a>, <a href="/retro/boot" style="color:#0ff">System Boot</a>!</li>
 <li><span class="blink" style="color:#f00">NEW!</span> Added the Retro Zone page -- you are looking at it!!</li>
 <li>Installed new 3Dfx Voodoo graphics card -- Quake runs smooth now</li>
 <li>My ESP32 digital pet learned a new trick -- it blinks!!</li>
@@ -309,12 +295,12 @@ This page is a framework! Future features planned:<br><br>
 
 <!-- WIN95 TASKBAR -->
 <div class="win95-taskbar">
-<div class="taskbar-status" id="statusBar">Ready</div>
-<div class="taskbar-item active"><span>🌐 Netscape</span></div>
-<a class="taskbar-item" style="text-decoration:none" href="/retro/BOOT"><span>🖥️ System Boot</span></a>
-<a class="taskbar-item" style="text-decoration:none" href="../notepad.html"><span>📝 Notepad</span></a>
-<a class="taskbar-item" style="text-decoration:none" href="../calculator.html"><span>🔢 Calculator</span></a>
+<div class="taskbar-item active"><span>🌐 Retro Zone</span></div>
+<a class="taskbar-item" style="text-decoration:none" href="/retro/boot"><span>🖥️ System Boot</span></a>
+<a class="taskbar-item" style="text-decoration:none" href="/retro/notes"><span>📝 Notepad</span></a>
+<a class="taskbar-item" style="text-decoration:none" href="/retro/calc"><span>🔢 Calculator</span></a>
 <a class="taskbar-item" style="text-decoration:none" href="#guestbookWindow"><span>📖 Guestbook</span></a>
+<div class="taskbar-status" id="statusBar">Ready</div>
 <div class="taskbar-clock" id="taskbarClock">12:00 AM</div>
 </div>
 
@@ -407,22 +393,25 @@ setSong(songIdx+1);if(playing)status.textContent='Playing: '+midiSongs[songIdx].
 setSong(songIdx-1);if(playing)status.textContent='Playing: '+midiSongs[songIdx].name;
 }
 }
-// Sound unlock gate + EQ toggle
-var gate=document.getElementById('soundGate');
-var unlocked=false;
+// Aggressive autostart -- no popup, just plays (resumes on first gesture if the browser blocks it)
 function setEq(on){var e=document.getElementById('eq');if(e)e.classList.toggle('on',!!on);}
-function unlockSound(){
-if(unlocked)return;unlocked=true;
-startAudio();playing=true;
+function bootAudio(){
+if(!actx){startAudio();}
+else if(actx.state==='suspended'){actx.resume();}
+if(!playing){
+playing=true;
 var b=document.getElementById('midiPlayBtn'),s=document.getElementById('midiStatus');
 if(b)b.textContent='||';
 if(s)s.textContent='Playing: '+midiSongs[songIdx].name;
-if(gate)gate.classList.add('hidden');
 }
-if(gate){
-gate.addEventListener('click',unlockSound);
-document.addEventListener('keydown',unlockSound);
 }
+try{bootAudio();}catch(e){}
+['click','keydown','pointerdown','touchstart'].forEach(function(ev){
+document.addEventListener(ev,function one(e){
+document.removeEventListener(ev,one);
+bootAudio();
+});
+});
 // Win95 status-bar flavor
 var statusBar=document.getElementById('statusBar');
 var statusMsgs=['Ready','Surfing the information superhighway...','Connecting to dshaker.space...','Downloading animated GIF... (3%)','You are visitor #1337','Best viewed with Netscape 3.0','Dialing up... please hold','Sending signal to the mothership'];

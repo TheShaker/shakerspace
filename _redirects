@@ -1,3 +1,8 @@
-/retro/BOOT      /retro/boot.html   200
+/retro/boot      /retro/boot.html   200
+/retro/BOOT      /retro/boot        301
+/retro/calc      /retro/calc.html   200
+/retro/notes     /retro/notes.html  200
 /retro.html      /retro/            301
-/boot.html       /retro/BOOT        301
+/boot.html       /retro/boot        301
+/calculator.html /retro/calc        301
+/notepad.html    /retro/notes       301
