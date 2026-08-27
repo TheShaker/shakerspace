@@ -12,6 +12,7 @@ Galaxy-themed personal site, deployed on [Cloudflare Pages](https://pages.cloudf
 | `dashboard.html` | System status cards (live via Pages Function `/api/services/status`) |
 | `eggs.html` | Easter-egg laboratory (client-side endpoints) |
 | `files.html` | File browser UI (backed by `/api/files`, R2 pending) |
+| `kandan.html` | Kanban & notes scratch pad (password-gated, backed by `/api/kandan` over KV) |
 | `contact.html` | Ways to reach the mothership (mailto button — no backend) |
 | `retro.html` | The Retro Zone — Win95 + Geocities nostalgia page |
 | `calculator.html` | Win95 Calculator app (reached from the Retro start menu) |
@@ -20,6 +21,7 @@ Galaxy-themed personal site, deployed on [Cloudflare Pages](https://pages.cloudf
 | `404.html` | Themed lost-in-space 404 |
 | `styles.css` | All styling — galaxy theme, light/dark mode |
 | `main.js` | Client-side interactivity — starfield, theme, CLI, files, dashboard |
+| `wrangler.toml` | Pages config — binds the `KANDAN` KV namespace for the board |
 | `_headers` | Security headers applied by Cloudflare Pages (CSP, nosniff, etc.) |
 | `functions/` | Cloudflare Pages Functions — the backend API |
 
@@ -32,6 +34,18 @@ at `functions/` and map 1:1 to URL paths.
 |---|---|---|
 | `GET /api/services/status` | `functions/api/services/status.js` | ✅ Live — powers the dashboard |
 | `GET /api/files` | `functions/api/files/index.js` | ✅ Live (empty list) — see below to enable uploads |
+| `GET/POST /api/kandan` | `functions/api/kandan.js` | ✅ Live — persists the Kandan board to the `KANDAN` KV namespace |
+
+### The Kandan board (`/kandan`)
+
+`kandan.html` is a functional kanban / notes scratch pad (drag cards between
+columns, add/delete columns + cards + notes). It's gated by the simple key
+`danban` (client-side, a fictional gag like the home console — nothing sensitive
+lives here). The whole board state is stored as one JSON doc in the `KANDAN`
+KV namespace, read/written through `functions/api/kandan.js`; the client also
+keeps a `localStorage` cache so the pad degrades gracefully if the API is down.
+Also reachable from the home console via the `KANDAN` command (gated under the
+SYSADMIN login).
 
 ### Enabling real file uploads (R2)
 

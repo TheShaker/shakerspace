@@ -106,6 +106,7 @@ function thock() {
       if (loggedIn) {
         cmds.push('', '  <span class="clis">— SYSADMIN CLEARANCE GRANTED —</span>',
         '  <span class="clih">SITES</span>   — Site inventory',
+        '  <span class="clih">KANDAN</span>  — Kanban / notes board',
         '  <span class="clih">INFO</span>    — System intel');
       }
       return cmds;
@@ -134,7 +135,7 @@ function thock() {
     },
     SITES: () => {
       if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
-      return ['Site inventory:', '  1. <span class="clih">DASHBOARD</span>   — dshaker.space', '  2. <span class="clih">EGGS</span>        — easter egg laboratory', '  3. <span class="clih">FILES</span>       — file hosting', '  4. <span class="clih">CONTACT</span>     — identity records', '  5. <span class="clih">RETRO</span>       — <span class="clir">??? classified ???</span>', '  6. <span class="clih">API</span>         — <span class="clir">planned</span>'];
+      return ['Site inventory:', '  1. <span class="clih">DASHBOARD</span>   — dshaker.space', '  2. <span class="clih">EGGS</span>        — easter egg laboratory', '  3. <span class="clih">FILES</span>       — file hosting', '  4. <span class="clih">CONTACT</span>     — identity records', '  5. <span class="clih">RETRO</span>       — <span class="clir">??? classified ???</span>', '  6. <span class="clih">KANDAN</span>      — kanban / notes board', '  7. <span class="clih">API</span>         — <span class="clir">planned</span>'];
     },
     INFO: () => {
       if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
@@ -144,6 +145,11 @@ function thock() {
     },
     EGG: () => { location.href = 'eggs.html'; return ['Navigating to Egg Laboratory...']; },
     RETRO: () => { location.href = '/retro/boot'; return ['Booting into the Retro Zone...']; },
+    KANDAN: () => {
+      if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
+      location.href = 'kandan.html';
+      return ['Unlocking the Kandan Board... <span class="clis">OK</span>'];
+    },
     WHOIS: () => { location.href = 'contact.html'; return ['Loading identity records...']; },
 
     STATUS: () => [
@@ -175,7 +181,7 @@ function thock() {
       loginState = null;
       // Fictional easter-egg credential for a client-side gag terminal.
       // It is NOT a real secret — never treat client-side auth as security.
-      if (rawCmd === 'THEHAT') {
+      if (rawCmd === 'ROOT123') {
         loggedIn = true;
         appendLine('<span class="clis">\u2713 ACCESS GRANTED</span> — Welcome, SYSADMIN.');
         appendLine('  Type <span class="clih">HELP</span> for new commands.');

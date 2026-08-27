@@ -1,0 +1,8 @@
+name = "shakerspace"
+compatibility_date = "2026-08-26"
+pages_build_output_dir = "."
+
+# KV binding used by functions/api/kandan.js to persist the kanban/notes board
+[[kv_namespaces]]
+binding = "KANDAN"
+id = "d8a7bf75e633405487fe02f354791082"
