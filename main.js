@@ -622,11 +622,11 @@ dropZone.addEventListener('click', () => document.getElementById('fileInput').cl
 
   // DATA-DRIVEN: append a page here and it auto-joins an orbit.
   const SITES = [
-    {label:'Dashboard',  icon:'🛰️', desc:'System status & diagnostics',  href:'dashboard.html', color:'#7b2ff7'},
+    {label:'Dashboard',  icon:'🛰️', desc:'System status & diagnostics',  href:'dashboard.html', color:'#22c55e'},
     {label:'Easter Eggs',icon:'🥚', desc:'Hidden endpoints await',        href:'eggs.html',      color:'#f472b6'},
     {label:'Files',      icon:'📁', desc:'Upload, download, manage',      href:'files.html',     color:'#2196f3'},
     {label:'Kandan',     icon:'🗂️', desc:'Kanban & notes scratch pad',   href:'kandan.html',    color:'#fbbf24'},
-    {label:'Contact',    icon:'📡', desc:'Reach the mothership',          href:'contact.html',   color:'#22c55e'},
+    {label:'Contact',    icon:'📡', desc:'Reach the mothership',          href:'contact.html',   color:'#7b2ff7'},
   ];
 
   const ctx = cvs.getContext('2d');
