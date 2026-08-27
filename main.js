@@ -610,18 +610,23 @@ dropZone.addEventListener('click', () => document.getElementById('fileInput').cl
 })();
 
 
-// ===== Solar System launcher (index) =====
+
+// ===== 3D Star Array launcher (index) =====
+// Each sub-site is a small white star at a fixed 3D position around a warm
+// central sun. The whole cluster rotates slowly in 3D (parallax: near stars
+// glide past far ones). Hover/tap eases the rotation to a stop and highlights
+// a star; click/tap travels.
 (function(){
   const cvs = document.getElementById('solar');
   if (!cvs) return;
 
-  // DATA-DRIVEN: append a page here and it auto-joins an orbit.
+  // DATA-DRIVEN: append a page here and it auto-joins the star array.
   const SITES = [
-    {label:'Dashboard',  icon:'🛰️', desc:'System status & diagnostics',  href:'dashboard.html', color:'#7b2ff7'},
-    {label:'Easter Eggs',icon:'🥚', desc:'Hidden endpoints await',        href:'eggs.html',      color:'#f472b6'},
-    {label:'Files',      icon:'📁', desc:'Upload, download, manage',      href:'files.html',     color:'#2196f3'},
-    {label:'Kandan',     icon:'🗂️', desc:'Kanban & notes scratch pad',   href:'kandan.html',    color:'#fbbf24'},
-    {label:'Contact',    icon:'📡', desc:'Reach the mothership',          href:'contact.html',   color:'#22c55e'},
+    {label:'Dashboard',  icon:'🛰️', desc:'System status & diagnostics',  href:'dashboard.html'},
+    {label:'Easter Eggs',icon:'🥚', desc:'Hidden endpoints await',        href:'eggs.html'},
+    {label:'Files',      icon:'📁', desc:'Upload, download, manage',      href:'files.html'},
+    {label:'Kandan',     icon:'🗂️', desc:'Kanban & notes scratch pad',   href:'kandan.html'},
+    {label:'Contact',    icon:'📡', desc:'Reach the mothership',          href:'contact.html'},
   ];
 
   const ctx = cvs.getContext('2d');
@@ -629,9 +634,14 @@ dropZone.addEventListener('click', () => document.getElementById('fileInput').cl
   const bar = document.getElementById('solBar');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let W=0,H=0,cx=0,cy=0,Rmin=0,Rmax=0;
-  const PLANETS = [];
-  let hover=-1, sel=-1, paused=false, t=0, raf=null;
+  // ---- projection state ----
+  let W=0,H=0,cx=0,cy=0;
+  const FOV = 420;
+  const TILT = 0.5;
+  const STARS = [];
+  const rot = { a: 0, spd: 0.00045, orig: 0.00045 };
+  let hover = -1, sel = -1, paused = false, t = 0;
+  let raf = null;
 
   function resize(){
     const r = cvs.getBoundingClientRect();
@@ -640,121 +650,136 @@ dropZone.addEventListener('click', () => document.getElementById('fileInput').cl
     cvs.style.width=r.width+'px'; cvs.style.height=r.height+'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
     W=r.width; H=r.height; cx=W/2; cy=H/2;
-    Rmin=Math.min(W,H)*0.30; Rmax=Math.min(W,H)*0.44;
-    initOrbits();
   }
   addEventListener('resize', resize);
 
-  function initOrbits(){
-    const N=SITES.length;
-    const rings = N>=9 ? 3 : 2;
-    const rStep = rings===2 ? [Rmin,Rmax] : [Rmin*0.95,(Rmin+Rmax)/2,Rmax];
-    SITES.forEach((s,i)=>{
-      const ring = i % rings;
-      s._ring=ring;
-      s._r=rStep[ring];
-      s._base=(Math.PI*2*i)/N + ring*(Math.PI/N);
-      s._speed=(0.5+Math.random()*0.7)*(ring%2?-1:1)*(reduce?0:1);
-      s._phase=Math.random()*0.5;
-      s._origSpeed=s._speed; s._tgt=s._speed;
+  function initCluster(){
+    const N=SITES.length; const s=Math.min(W,H);
+    SITES.forEach((site,i)=>{
+      // distinct 3D slot: even azimuth, alternate above/below, vary radius & depth
+      const az = (Math.PI*2*i)/N + (Math.random()*0.4-0.2);
+      const el = (i%2? -1:1) * (0.1 + Math.random()*0.45);
+      const R  = s * (0.30 + (i%2? 0.13:0.06) + Math.random()*0.05);
+      STARS.push({
+        s: site,
+        x: R*Math.cos(el)*Math.cos(az),
+        y: R*Math.sin(el),
+        z: R*Math.cos(el)*Math.sin(az),
+        tw:   Math.random()*Math.PI*2,
+        twSpd: 1.5+Math.random()*2.5,
+      });
     });
+  }
+
+  // rotate a fixed 3D point by global rotation + tilt, project to screen
+  function place(x,y,z){
+    const ca=Math.cos(rot.a), sa=Math.sin(rot.a);
+    const X=x*ca - z*sa;
+    const Z0=x*sa + z*ca;
+    const Y=y;
+    const cT=Math.cos(TILT), sT=Math.sin(TILT);
+    const Y2=Y*cT - Z0*sT;
+    let Z2=Y*sT + Z0*cT;
+    // never pass behind the camera
+    const MINZ = -FOV*0.82;
+    if(Z2<MINZ) Z2=MINZ;
+    const sc=FOV/(FOV+Z2);
+    return { sx: cx + X*sc, sy: cy - Y2*sc, sc, z: Z2 };
   }
 
   function easeSpeeds(){
-    SITES.forEach(s=>{
-      if(Math.abs(s._speed-s._tgt)<0.001) s._speed=s._tgt;
-      else s._speed+=(s._tgt-s._speed)*0.06;
-    });
+    const tg = paused?0:rot.orig;
+    if(Math.abs(rot.spd-tg)<0.000001) rot.spd=tg;
+    else rot.spd += (tg-rot.spd)*0.05;
   }
-  function pauseAll(){ if(paused) return; paused=true; SITES.forEach(s=>s._tgt=0); }
-  function resumeAll(){ if(!paused) return; paused=false; SITES.forEach(s=>s._tgt=s._origSpeed); }
 
-  function lighten(hex,p){const n=parseInt(hex.replace('#',''),16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;r+=(255-r)*p/100;g+=(255-g)*p/100;b+=(255-b)*p/100;return `rgb(${r|0},${g|0},${b|0})`;}
+  function drawStar(st, hovered){
+    const a = st.tw + performance.now()*0.001*st.twSpd;
+    const tw = hovered ? 1 : 0.5+0.5*Math.sin(a);
+    const near = Math.max(0.25, 1 - (st.z/FOV)*0.9);
+    const alpha = Math.max(0.3, near*(0.6+0.4*tw));
+    const size = 3.4*st.sc*(hovered?2.3:1);
+    const x=st.sx, y=st.sy;
+    const cool = st.z>0;
+    const R=cool?215:255, G=cool?222:255, B=cool?255:255, rc=v=>v|0;
+    let g=ctx.createRadialGradient(x,y,0,x,y,size*4);
+    g.addColorStop(0,`rgba(${rc(R)},${rc(G)},${rc(B)},${0.16*alpha})`);
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,size*4,0,6.2832); ctx.fill();
+    g=ctx.createRadialGradient(x,y,0,x,y,size*1.7);
+    g.addColorStop(0,`rgba(${rc(R)},${rc(G)},${rc(B)},${0.5*alpha})`);
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,size*1.7,0,6.2832); ctx.fill();
+    ctx.fillStyle=`rgba(255,255,255,${Math.min(1,0.78+0.22*tw)})`;
+    ctx.beginPath(); ctx.arc(x,y,Math.max(1,size*0.4),0,6.2832); ctx.fill();
+    if(alpha>0.5 || hovered){
+      ctx.strokeStyle=`rgba(255,255,255,${(hovered?0.5:0.18)*alpha})`;
+      ctx.lineWidth=1; const len=size*(hovered?2.4:1.7);
+      ctx.beginPath(); ctx.moveTo(x-len,y); ctx.lineTo(x+len,y);
+      ctx.moveTo(x,y-len); ctx.lineTo(x,y+len); ctx.stroke();
+    }
+    if(hovered){
+      ctx.strokeStyle='rgba(255,255,255,0.65)'; ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.arc(x,y,size+6,0,6.2832); ctx.stroke();
+    }
+  }
 
   function drawFrame(){
-    t += reduce?0:0.016;
     easeSpeeds();
+    rot.a += rot.spd;
+    t += 0.016;
     ctx.clearRect(0,0,W,H);
-
-    // sun glow
-    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,Rmin*0.9);
-    g.addColorStop(0,'rgba(251,191,36,0.16)');
-    g.addColorStop(0.5,'rgba(123,47,247,0.07)');
-    g.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,Rmin*0.95,0,6.2832); ctx.fill();
-
-    // orbit guides
-    SITES.forEach(s=>{
-      ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.arc(cx,cy,s._r,0,6.2832); ctx.stroke();
-    });
-
-    // planets
-    PLANETS.length=0;
-    SITES.forEach((s,i)=>{
-      const a=s._base+t*s._speed+s._phase;
-      const px=cx+Math.cos(a)*s._r, py=cy+Math.sin(a)*s._r;
-      PLANETS.push({s,px,py,i});
-      const on=(hover===i||sel===i);
-      const rad=(on?26:21)*(s._ring===0?1:1.12);
-      ctx.fillStyle=on?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.12)';
-      ctx.beginPath(); ctx.arc(px,py,on?3.8:2.4,0,6.2832); ctx.fill();
-      const pg=ctx.createRadialGradient(px-rad*.3,py-rad*.3,rad*.1,px,py,rad);
-      pg.addColorStop(0,lighten(s.color,40)); pg.addColorStop(1,s.color);
-      ctx.fillStyle=pg; ctx.beginPath(); ctx.arc(px,py,rad,0,6.2832); ctx.fill();
-      if(on){
-        ctx.strokeStyle='rgba(255,255,255,.85)'; ctx.lineWidth=2;
-        ctx.shadowColor=s.color; ctx.shadowBlur=22;
-        ctx.beginPath(); ctx.arc(px,py,rad,0,6.2832); ctx.stroke();
-        ctx.shadowBlur=0;
-      }
-      ctx.font=(on?22:17)+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(s.icon,px,py);
-    });
-
-    // sun core (rocket)
-    ctx.save();
-    ctx.shadowColor='rgba(251,191,36,.8)'; ctx.shadowBlur=26;
-    ctx.fillStyle='#fbbf24'; ctx.beginPath(); ctx.arc(cx,cy,26,0,6.2832); ctx.fill();
-    ctx.restore(); ctx.shadowBlur=0;
-    ctx.font='28px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('🚀',cx,cy);
-
+    STARS.forEach(st=>{ const p=place(st.x,st.y,st.z); st.sx=p.sx; st.sy=p.sy; st.sc=p.sc; st.z=p.z; });
+    const order = STARS.map((st,i)=>({st,i})).sort((p,q)=>q.st.z-p.st.z);
+    order.forEach(({st,i})=>drawStar(st, hover===i));
+    // central warm sun
+    const su=Math.sin(performance.now()*0.001*1.2+1)*0.5+0.5;
+    let g=ctx.createRadialGradient(cx,cy,0,cx,cy,26);
+    g.addColorStop(0,`rgba(255,240,205,${0.5+0.15*su})`);
+    g.addColorStop(0.35,`rgba(255,205,130,${0.26})`);
+    g.addColorStop(1,'rgba(255,180,90,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,26,0,6.2832); ctx.fill();
+    ctx.fillStyle=`rgba(255,252,242,${0.92})`;
+    ctx.beginPath(); ctx.arc(cx,cy,4,0,6.2832); ctx.fill();
     raf=requestAnimationFrame(drawFrame);
   }
 
   function hitTest(x,y){
-    for(let i=0;i<PLANETS.length;i++){
-      const p=PLANETS[i], rad=24;
-      const dx=p.px-x, dy=p.py-y;
-      if(dx*dx+dy*dy<rad*rad) return i;
+    for(let i=0;i<STARS.length;i++){
+      const st=STARS[i];
+      const dx=st.sx-x, dy=st.sy-y;
+      const hitR = Math.max(18, 3.4*st.sc*2.3*0.9);
+      if(dx*dx+dy*dy < hitR*hitR) return i;
     }
     return -1;
   }
-  function showTip(i,mx,my){
-    const p=PLANETS[i]; if(!p){tip.classList.remove('on');hover=-1;return;}
+  function showTip(i){
+    if(i<0){ tip.classList.remove('on'); hover=-1; return; }
+    const st=STARS[i];
     const rect=cvs.getBoundingClientRect();
-    let lx=p.px+26, ly=p.py-30;
-    if(lx+220>rect.width) lx=p.px-230;
-    if(ly<8) ly=p.py+34;
-    tip.innerHTML=`<div class="tt">${p.s.icon} ${p.s.label}</div><div class="td">${p.s.desc}</div>`;
-    tip.style.left=lx+'px'; tip.style.top=ly+'px';
-    tip.classList.add('on');
-    bar.innerHTML=`<span><b>${p.s.icon}</b> ${p.s.label}</span> &nbsp;·&nbsp; <span>${p.s.desc}</span>`;
+    let lx=st.sx+22, ly=st.sy-34;
+    if(lx+210>rect.width) lx=st.sx-234;
+    if(ly<6) ly=st.sy+30;
+    tip.innerHTML=`<div class="tt">${st.s.icon} ${st.s.label}</div><div class="td">${st.s.desc}</div>`;
+    tip.style.left=lx+'px'; tip.style.top=ly+'px'; tip.classList.add('on');
+    bar.innerHTML=`<span><b>${st.s.icon}</b> ${st.s.label}</span> &nbsp;·&nbsp; <span>${st.s.desc}</span>`;
   }
-  function clearTip(){ tip.classList.remove('on'); bar.innerHTML='🛰️ Hover or tap a world — <b>It only pauses for you</b>'; hover=-1; }
+  function clearTip(){ tip.classList.remove('on'); bar.innerHTML='⭐ Hover or tap a star — <b>it pauses for you</b>'; hover=-1; }
+
+  function pauseAll(){ if(paused) return; paused=true; }
+  function resumeAll(){ if(!paused) return; paused=false; }
 
   cvs.addEventListener('mousemove',e=>{
     const r=cvs.getBoundingClientRect(); const x=e.clientX-r.left, y=e.clientY-r.top;
     const h=hitTest(x,y);
-    if(h>=0){ pauseAll(); hover=h; showTip(h,x,y); cvs.style.cursor='pointer'; }
+    if(h>=0){ pauseAll(); hover=h; showTip(h); cvs.style.cursor='pointer'; }
     else { resumeAll(); clearTip(); cvs.style.cursor='default'; }
   });
   cvs.addEventListener('mouseleave',()=>{ clearTip(); cvs.style.cursor='default'; });
   cvs.addEventListener('click',e=>{
     const r=cvs.getBoundingClientRect(); const x=e.clientX-r.left,y=e.clientY-r.top;
     const h=hitTest(x,y);
-    if(h>=0) location.href=PLANETS[h].s.href;
+    if(h>=0) location.href=STARS[h].s.href;
   });
   cvs.addEventListener('touchstart',e=>{
     const t=e.touches[0]; const r=cvs.getBoundingClientRect();
@@ -762,13 +787,14 @@ dropZone.addEventListener('click', () => document.getElementById('fileInput').cl
     const h=hitTest(x,y);
     if(h>=0){
       pauseAll();
-      if(sel===h){ location.href=PLANETS[h].s.href; return; }
+      if(sel===h){ location.href=STARS[h].s.href; return; }
       sel=h; cvs.style.cursor='pointer';
       if(navigator.vibrate) navigator.vibrate(8);
-      showTip(h,x,y);
+      showTip(h);
     } else { sel=-1; resumeAll(); clearTip(); }
   },{passive:true});
 
   resize();
+  initCluster();
   drawFrame();
 })();
