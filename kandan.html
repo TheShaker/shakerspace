@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KANDAN — dshaker.space</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&family=Shadows+Into+Light&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -49,7 +49,7 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .colchev:hover{background:rgba(0,0,0,.1)}
 .coltitle{flex:1;font-family:'Shadows Into Light',cursive;font-size:1.25rem;letter-spacing:.02em;background:transparent;border:none;outline:none;color:var(--t1);border-bottom:1px dashed rgba(0,0,0,.2)}
 .colcount{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:rgba(43,33,25,.5)}
-.mini{font-size:.7rem;padding:.15rem .45rem;opacity:.6;box-shadow:none;background:transparent;overflow:hidden}
+.mini{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;padding:0;line-height:1;font-size:.7rem;opacity:.6;box-shadow:none;background:transparent;overflow:hidden;border-radius:6px}
 .mini:hover{opacity:1;background:rgba(0,0,0,.1)}
 .cards{display:flex;flex-direction:column;gap:.7rem;min-height:30px}
 .cards.collapsed{display:none}
@@ -72,9 +72,9 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .cgrip{cursor:grab;cursor:-webkit-grab;color:rgba(43,33,25,.45);font-size:.95rem;line-height:1;margin-bottom:.25rem;user-select:none;-webkit-user-select:none;width:fit-content;touch-action:none}
 .cgrip:active{cursor:grabbing}.cgrip:hover{color:rgba(43,33,25,.8)}
 .crow{display:flex;gap:.45rem;align-items:flex-start}
-.ctext{flex:1;background:transparent;border:none;outline:none;color:inherit;font-family:'Shadows Into Light',cursive;font-size:1.12rem;width:100%;resize:none;min-height:1.2em;line-height:1.25}
+.ctext{flex:1;background:transparent;border:none;outline:none;color:inherit;font-family:'Patrick Hand',cursive;font-size:1.18rem;width:100%;resize:none;min-height:1.2em;line-height:1.3}
 .cmeta{display:flex;justify-content:space-between;align-items:center;margin-top:.3rem;gap:.3rem;flex-wrap:wrap}
-.cdel{font-size:.75rem;opacity:.4;background:transparent;box-shadow:none;border:none;overflow:hidden}
+.cdel{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;padding:0;line-height:1;font-size:.75rem;opacity:.4;background:transparent;box-shadow:none;border:none;overflow:hidden;border-radius:6px}
 .cdel:hover{opacity:1;color:var(--err);background:transparent}
 .cnotes{width:100%;background:rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.12);border-radius:4px;color:rgba(53,43,26,.75);font-family:'JetBrains Mono',monospace;font-size:.66rem;padding:.3rem .45rem;margin-top:.35rem;min-height:2em;resize:vertical;outline:none}
 .cnotes:focus{background:rgba(255,255,255,.4)}
@@ -102,7 +102,7 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .scratchhead{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.4rem;font-family:'Shadows Into Light',cursive}
 .scratchhead h2{font-size:1.5rem;letter-spacing:.02em;color:rgba(53,43,26,.85)}
 .scratchhead .hint{font-size:.72rem;color:rgba(53,43,26,.5);font-family:'JetBrains Mono',monospace}
-#scratch{width:100%;background:rgba(255,255,255,.3);border:none;border-bottom:1px dashed rgba(0,0,0,.25);color:#35291a;font-family:'Shadows Into Light',cursive;font-size:1.15rem;min-height:4em;resize:vertical;padding:.35rem .2rem;outline:none;line-height:1.4}
+#scratch{width:100%;background:rgba(255,255,255,.3);border:none;border-bottom:1px dashed rgba(0,0,0,.25);color:#35291a;font-family:'Patrick Hand',cursive;font-size:1.2rem;min-height:4em;resize:vertical;padding:.35rem .2rem;outline:none;line-height:1.4}
 #scratch:focus{background:rgba(255,255,255,.45)}
 .scratchbar{display:flex;justify-content:flex-end;margin-top:.5rem}
 
@@ -141,8 +141,6 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
       <a class="back" href="index.html">← Home</a>
     </div>
   </div>
-  <div class="board" id="board"></div>
-
   <div class="scratch">
     <div class="scratchhead">
       <h2>📝 Scratch &amp; Dump</h2>
@@ -153,6 +151,8 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
       <button class="primary" onclick="scratchToTask()">→ Turn into task</button>
     </div>
   </div>
+
+  <div class="board" id="board"></div>
 </div>
 
 <!-- hidden due picker (rendered, off-screen, so showPicker() works) -->
