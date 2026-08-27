@@ -161,7 +161,7 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
   <div class="gatebox">
     <div class="glock">🗂️</div>
     <h2>KANDAN LOCKED</h2>
-    <p>Enter the access key to open the board.</p>
+    <p>Enter the board's write key to edit. Viewing stays public.</p>
     <input id="gateIn" type="password" placeholder="••••••" autocomplete="off">
     <div class="gaterr" id="gateErr"></div>
     <button class="primary" style="width:100%" onclick="unlock()">Unlock</button>
@@ -169,12 +169,13 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 </div>
 
 <script>
-// A personal scratch pad. The "danban" key is a light client-side gate for a
-// non-sensitive board — it is NOT real security (this is the site's deliberate
-// fictional-gag style). Real auth/root never happens client-side.
-const KEY = 'danban';
-const UI_LOCK = 'kandan_unlocked';
+// A personal scratch pad. Viewing is public; WRITING requires a key you enter
+// once per browser session. The key is NOT in this public source — it's checked
+// server-side against the KANDAN_KEY secret binding by /api/kandan (POST 403s
+// without it). The page stores the key only in sessionStorage (clears on close).
+const SESS_WK = 'kandan_write_key';
 const LS_CACHE = 'kandan_cache';
+let writeKey = sessionStorage.getItem(SESS_WK) || '';
 const DEFAULT_TAGS = ['#home', '#work'];
 const COLORS = ['', 'pink', 'blue', 'green', 'orange'];
 
@@ -186,16 +187,32 @@ let state = { filter: '' };
 function uid(p){ return p + Math.random().toString(36).slice(2,9); }
 
 // ---------- Gate ----------
-function unlock(){
+async function unlock(){
   const v = document.getElementById('gateIn').value.trim();
   const err = document.getElementById('gateErr');
-  if (v === KEY){
-    localStorage.setItem(UI_LOCK, '1');
+  if (!v){ err.textContent = 'enter the write key'; return; }
+  const ok = await verifyKey(v);
+  if (ok){
+    writeKey = v;
+    sessionStorage.setItem(SESS_WK, writeKey);
     openBoard();
   } else {
     err.textContent = '✗ access denied';
   }
   document.getElementById('gateIn').value = '';
+}
+
+// Confirm a typed key against the API (probe endpoint). If the API is unreachable
+// (offline-cache mode) we allow unlock so the pad still renders.
+async function verifyKey(k){
+  try {
+    const r = await fetch('/api/kandan?verify=1', {
+      headers: { 'X-Kandan-Key': k }, cache: 'no-store'
+    });
+    if (r.status !== 200) return false;
+    const d = await r.json();
+    return d.authorized === true;
+  } catch(e) { return true; }
 }
 
 // ---------- Load / save ----------
@@ -265,7 +282,7 @@ async function save(){
   try {
     const r = await fetch('/api/kandan', {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{'Content-Type':'application/json','X-Kandan-Key': writeKey},
       body: JSON.stringify(board)
     });
     if (r.ok && dirty){ dirty=false; el.classList.add('on'); setTimeout(()=>el.classList.remove('on'),1500); }
@@ -591,7 +608,7 @@ document.getElementById('duePicker').addEventListener('change', e=>{
   else { cd.due = new Date(e.target.value).toISOString(); }
   scheduleSave(); render();
 });
-if (localStorage.getItem(UI_LOCK) === '1'){
+if (writeKey){
   openBoard();
 } else {
   document.getElementById('wrap').classList.add('hidden');

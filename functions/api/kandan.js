@@ -5,8 +5,40 @@
 
 const KEY = 'kandan_board';
 
+// Timing-safe-ish string compare for the write key.
+function keysEqual(a, b) {
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+// The write key may come from the query string (?key=...) or the X-Kandan-Key
+// header. On the page, the client only ever does GET (read-only), and writes are
+// made from chat/Telegram via the CLI, which sends the key. GET stays public
+// because the board is a non-sensitive scratch pad that the page renders anyway.
+function authorized(context) {
+  const expected = context.env.KANDAN_KEY;
+  if (!expected) return false;               // no secret configured -> fail closed
+  const url = new URL(context.request.url);
+  const fromQuery = url.searchParams.get('key');
+  const fromHeader = context.request.headers.get('X-Kandan-Key');
+  return keysEqual(fromQuery || '', expected) || keysEqual(fromHeader || '', expected);
+}
+
 export async function onRequestGet(context) {
   const ns = context.env.KANDAN;
+
+  // Key-verification probe: /api/kandan?verify=1 with X-Kandan-Key header
+  // lets the page gate confirm a typed key before unlocking editing. No KV touched.
+  const url = new URL(context.request.url);
+  if (url.searchParams.get('verify')) {
+    return Response.json({ authorized: authorized(context) }, {
+      headers: { 'Cache-Control': 'no-store' },
+    });
+  }
+
   if (!ns) {
     return Response.json({ columns: [], notes: [], note: 'KANDAN binding not configured.' }, {
       headers: { 'Cache-Control': 'no-store' },
@@ -24,6 +56,12 @@ export async function onRequestGet(context) {
 }
 
 export async function onRequestPost(context) {
+  if (!authorized(context)) {
+    return Response.json({ error: 'Unauthorized — a valid write key is required.' }, {
+      status: 403,
+      headers: { 'Cache-Control': 'no-store' },
+    });
+  }
   const ns = context.env.KANDAN;
   if (!ns) {
     return Response.json({ error: 'KANDAN binding not configured.' }, {
