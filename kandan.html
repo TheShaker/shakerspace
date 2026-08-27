@@ -89,6 +89,9 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .d-blue{background:var(--card-b)}.d-green{background:var(--card-g)}.d-orange{background:var(--card-o)}
 .duebtn{font-size:.68rem;padding:.1rem .3rem;box-shadow:none;background:rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.15)}
 .duebtn:hover{background:rgba(0,0,0,.14)}
+.prio{font-size:.6rem;line-height:1;padding:.08rem .22rem;box-shadow:none;background:rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.15);border-radius:4px;color:rgba(43,33,25,.75)}
+.prio:hover{background:rgba(0,0,0,.16);color:var(--t1)}
+.prio:disabled{opacity:.3;cursor:default;background:rgba(0,0,0,.03)}
 .addcard{background:rgba(255,255,255,.5);border:1px dashed rgba(0,0,0,.3);border-radius:6px;color:rgba(43,33,25,.6);padding:.45rem;font-size:.7rem;cursor:pointer;text-align:left;font-family:'JetBrains Mono',monospace;box-shadow:none}
 .addcard:hover{color:var(--n-blue);background:rgba(255,255,255,.7)}
 .addcol{align-self:flex-start;flex:0 0 auto}
@@ -410,9 +413,22 @@ function cardEl(cd, col, idx){
   const left = document.createElement('span');
   left.style.display='flex'; left.style.alignItems='center'; left.style.gap='.3rem'; left.style.flexWrap='wrap';
   if (cd.tag) { const chip = document.createElement('span'); chip.className='tagchip'; chip.textContent=cd.tag; left.appendChild(chip); }
-  const pos = document.createElement('span');
-  pos.className = 'colcount'; pos.textContent = (col.cards.indexOf(cd)+1);
-  left.appendChild(pos);
+  // Priority control: slot number flanked by move-up / move-down arrows.
+  // Drag on the grip reorders too, but this is the clickable alternative.
+  const prioW = document.createElement('span');
+  prioW.style.display='flex'; prioW.style.alignItems='center'; prioW.style.gap='.12rem';
+  const up = document.createElement('button');
+  up.className = 'prio'; up.textContent = '▲'; up.title = 'Move up (raise priority)';
+  up.disabled = (col.cards.indexOf(cd) === 0);
+  up.onclick = (e)=>{ e.stopPropagation(); moveCard(col, cd, -1); };
+  const num = document.createElement('span');
+  num.className = 'colcount'; num.textContent = (col.cards.indexOf(cd)+1);
+  const dn = document.createElement('button');
+  dn.className = 'prio'; dn.textContent = '▼'; dn.title = 'Move down (lower priority)';
+  dn.disabled = (col.cards.indexOf(cd) === col.cards.length-1);
+  dn.onclick = (e)=>{ e.stopPropagation(); moveCard(col, cd, 1); };
+  prioW.append(up, num, dn);
+  left.appendChild(prioW);
 
   const right = document.createElement('span');
   right.style.display='flex'; right.style.alignItems='center'; right.style.gap='.2rem';
@@ -501,11 +517,25 @@ function toLocalInput(d){
 function clearDue(cd){ cd.due = null; scheduleSave(); render(); }
 
 // ---------- Drag (pointer-based) ----------
-let dragCard = null, dragFrom = null, dragGhost = null, overCol = null;
+let dragCard = null, dragFrom = null, dragGhost = null, overCol = null, dragY = 0;
 function colFromPoint(x, y){
   const el = document.elementFromPoint(x, y);
-  const cardsEl = el && el.closest ? el.closest('.cards') : null;
-  return (cardsEl && cardsEl.dataset.col) ? (board.columns.find(c=>c.id===cardsEl.dataset.col) || null) : null;
+  const colEl = el && el.closest ? el.closest('.col') : null;
+  return colEl ? (board.columns.find(c=>c.id===colEl.dataset.col) || null) : null;
+}
+/* Map a pointer Y onto an insertion array-index within a column. Renders with an
+   active tag filter hide some cards, so we index by translating rendered DOM order
+   back to real array positions (hidden cards keep their slots). */
+function insertionIndex(col, cardsEl, y){
+  const dom = Array.from(cardsEl.querySelectorAll(':scope > .card:not(.dragging)'));
+  const order = dom.map(el => col.cards.findIndex(cd => cd.id === el.dataset.card));
+  let before = order.length;
+  for (let i=0;i<dom.length;i++){
+    const r = dom[i].getBoundingClientRect();
+    if (y < r.top + r.height/2){ before = i; break; }
+  }
+  if (before <= 0) return 0;
+  return order[before-1] + 1;
 }
 function startDrag(e, cd, col, div){
   if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -529,6 +559,7 @@ function positionGhost(e){
 }
 function onDragMove(e){
   positionGhost(e); e.preventDefault();
+  dragY = e.clientY;
   document.querySelectorAll('.col.ov').forEach(c=>c.classList.remove('ov'));
   const col = colFromPoint(e.clientX, e.clientY);
   if (col){ const sec = document.querySelector('.col[data-col="'+col.id+'"]'); if (sec) sec.classList.add('ov'); }
@@ -542,18 +573,38 @@ function endDrag(){
   if (dragGhost){ dragGhost.remove(); dragGhost=null; }
   document.querySelectorAll('.card.dragging').forEach(c=>c.classList.remove('dragging'));
   document.querySelectorAll('.col.ov').forEach(c=>c.classList.remove('ov'));
-  const target = overCol; overCol = null;
-  if (dragCard){
-    if (target && target !== dragFrom){
-      const i = dragFrom.cards.indexOf(dragCard);
-      if (i!==-1) dragFrom.cards.splice(i,1);
-      // auto-expand a collapsed target so the card is visible
-      if (target !== dragFrom && target.collapsed) target.collapsed = false;
-      target.cards.push(dragCard);
-      scheduleSave(); render();
-    } else { render(); }
+  const target = overCol, cd = dragCard, from = dragFrom; overCol = null;
+  dragCard = null; dragFrom = null;
+  if (!cd || !from) return;
+  const srcIdx = from.cards.indexOf(cd);
+  if (srcIdx === -1){ render(); return; }
+  if (target){
+    // Determine the insertion array-index in the target column from the drop point.
+    let k;
+    const sec = document.querySelector('.col[data-col="'+target.id+'"]');
+    const cardsEl = sec && sec.querySelector('.cards');
+    if (cardsEl && !target.collapsed) k = insertionIndex(target, cardsEl, dragY);
+    else k = target.cards.length;
+    from.cards.splice(srcIdx, 1);
+    if (target === from){
+      if (k > srcIdx) k--;              // shift for the just-removed card
+      from.cards.splice(k, 0, cd);      // reorder within the same column (priority)
+    } else {
+      if (target.collapsed) target.collapsed = false; // auto-expand so it's visible
+      target.cards.splice(k, 0, cd);
+    }
+    scheduleSave(); render();
+  } else {
+    render();
   }
-  dragCard=null; dragFrom=null;
+}
+function moveCard(col, cd, delta){
+  const i = col.cards.indexOf(cd);
+  const j = i + delta;
+  if (i === -1 || j < 0 || j >= col.cards.length) return;
+  col.cards.splice(i, 1);
+  col.cards.splice(j, 0, cd);
+  scheduleSave(); render();
 }
 
 // ---------- Countdown ticker ----------
