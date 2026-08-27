@@ -537,8 +537,10 @@ dropZone.addEventListener('drop', handleDrop);
 dropZone.addEventListener('click', () => document.getElementById('fileInput').click());
 }
 
-// Hidden emoji easter eggs
+// Hidden emoji easter eggs — only on the Easter Eggs page
 (function() {
+  // The egg terminal only exists on eggs.html; skip on every other page.
+  if (!document.getElementById('eterm')) return;
   const EMOJIS = [
     { emoji: '🛸', x: 12, y: 25 },
     { emoji: '🪐', x: 78, y: 15 },
@@ -765,9 +767,9 @@ dropZone.addEventListener('click', () => document.getElementById('fileInput').cl
     if(ly<6) ly=o.sy+22;
     tip.innerHTML=`<div class="tt">${o.s.icon} ${o.s.label}</div><div class="td">${o.s.desc}</div>`;
     tip.style.left=lx+'px'; tip.style.top=ly+'px'; tip.classList.add('on');
-    bar.innerHTML=`<span><b>${o.s.icon}</b> ${o.s.label}</span> &nbsp;·&nbsp; <span>${o.s.desc}</span>`;
+    if (bar) bar.innerHTML=`<span><b>${o.s.icon}</b> ${o.s.label}</span> &nbsp;·&nbsp; <span>${o.s.desc}</span>`;
   }
-  function clearTip(){ tip.classList.remove('on'); bar.innerHTML='🪐 Hover or tap a world — <b>it pauses for you</b>'; hover=-1; }
+  function clearTip(){ tip.classList.remove('on'); if (bar) bar.innerHTML=''; hover=-1; }
 
   function pauseAll(){ if(paused) return; paused=true; }
   function resumeAll(){ if(!paused) return; paused=false; }
