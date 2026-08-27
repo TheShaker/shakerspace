@@ -39,14 +39,16 @@ at `functions/` and map 1:1 to URL paths.
 ### The Kandan board (`/kandan`)
 
 > **Security (2026-08-27):** the board is **read-only to the public** — anyone can
-> view, but **writes require a key** checked server-side against the `KANDAN_KEY`
-> secret binding (never in this repo). `POST /api/kandan` returns 403 without a
-> valid key (via `?key=` or `X-Kandan-Key` header). In the browser, the page gate
-> asks for the write key once per session (stored in sessionStorage, cleared on
-> close) and autosave sends it. The chat/Telegram CLI reads the key from
-> `/root/.secrets/kandan.env` (env `KANDAN_KEY`). Set it with:
-> `echo "$KEY" | wrangler pages secret put KANDAN_KEY --project-name shakerspace`.
-> If no `KANDAN_KEY` binding is configured the API fails closed (all writes 403).
+> view, but **writes require a key** checked server-side; `POST /api/kandan` returns
+> 403 without one (via `?key=` or `X-Kandan-Key` header). Two accepted keys:
+> **`KANDAN_KEY`** (secure random — the agent/CLI/Telegram credential, never public)
+> and **`KANDAN_UI_KEY`** (`danban` — the memorable front-door key the user types at
+> the board gate). Both are secret bindings, never in this repo, so the gate phrase
+> stays out of public source. In the browser the gate asks for the key once per
+> session (sessionStorage, cleared on close) and autosave sends it. The chat/Telegram
+> CLI reads `KANDAN_KEY` from `/root/.secrets/kandan.env`. Set with:
+> `echo "$KEY" | wrangler pages secret put KANDAN_<KEY|UI_KEY> --project-name shakerspace`.
+> If neither binding is configured the API fails closed (all writes 403).
 
 `kandan.html` is a functional kanban / notes scratch pad themed as a **corkboard**
 with **colorable sticky notes** (drag cards between columns via the ⠿ grip —

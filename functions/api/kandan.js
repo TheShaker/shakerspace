@@ -15,16 +15,25 @@ function keysEqual(a, b) {
 }
 
 // The write key may come from the query string (?key=...) or the X-Kandan-Key
-// header. On the page, the client only ever does GET (read-only), and writes are
-// made from chat/Telegram via the CLI, which sends the key. GET stays public
-// because the board is a non-sensitive scratch pad that the page renders anyway.
+// header. Two keys are accepted:
+//   - KANDAN_KEY   (secure random) — the agent/CLI/Telegram credential, never public.
+//   - KANDAN_UI_KEY ("danban")      — the memorable front-door key the user types
+//                                     at the board gate. Stored as a secret binding,
+//                                     NOT in this repo, so it stays out of public source.
+// GET stays public (the board is a non-sensitive scratch pad); POST 403s without a
+// valid key of either kind.
 function authorized(context) {
-  const expected = context.env.KANDAN_KEY;
-  if (!expected) return false;               // no secret configured -> fail closed
+  const k = context.env.KANDAN_KEY;
+  const ui = context.env.KANDAN_UI_KEY;
+  if (!k && !ui) return false;               // no secret configured -> fail closed
   const url = new URL(context.request.url);
   const fromQuery = url.searchParams.get('key');
   const fromHeader = context.request.headers.get('X-Kandan-Key');
-  return keysEqual(fromQuery || '', expected) || keysEqual(fromHeader || '', expected);
+  const given = fromQuery || fromHeader || '';
+  if (!given) return false;
+  if (k && keysEqual(given, k)) return true;
+  if (ui && keysEqual(given, ui)) return true;
+  return false;
 }
 
 export async function onRequestGet(context) {
