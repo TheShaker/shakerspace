@@ -76,6 +76,13 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .cmeta{display:flex;justify-content:space-between;align-items:center;margin-top:.3rem;gap:.3rem;flex-wrap:wrap}
 .cdel{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;padding:0;line-height:1;font-size:.75rem;opacity:.4;background:transparent;box-shadow:none;border:none;overflow:hidden;border-radius:6px}
 .cdel:hover{opacity:1;color:var(--err);background:transparent}
+.cdone{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;padding:0;line-height:1;font-size:.8rem;font-weight:700;opacity:.4;background:transparent;box-shadow:none;border:none;overflow:hidden;border-radius:6px}
+.cdone:hover{opacity:1;color:var(--ok);background:transparent}
+/* Done-column cards recede: blend into the grey column bounding box */
+.col.done .card{background:rgba(255,248,230,.4);color:rgba(43,33,25,.45);box-shadow:none;border-color:rgba(0,0,0,.06)}
+.col.done .card::before{opacity:.25}
+.col.done .card .ctext,.col.done .card .cgrip,.col.done .card .cdel,.col.done .card .cdone{color:rgba(43,33,25,.45)}
+.col.done .card .cnotes{background:rgba(0,0,0,.04);color:rgba(43,33,25,.4)}
 .cnotes{width:100%;background:rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.12);border-radius:4px;color:rgba(53,43,26,.75);font-family:'JetBrains Mono',monospace;font-size:.66rem;padding:.3rem .45rem;margin-top:.35rem;min-height:2em;resize:vertical;outline:none}
 .cnotes:focus{background:rgba(255,255,255,.4)}
 .ctagsel{font-family:'JetBrains Mono',monospace;font-size:.64rem;background:rgba(255,255,255,.6);color:var(--t1);border:1px solid rgba(0,0,0,.2);border-radius:5px;padding:.12rem .25rem;outline:none;cursor:pointer}
@@ -94,7 +101,6 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .prio:disabled{opacity:.3;cursor:default;background:rgba(0,0,0,.03)}
 .addcard{background:rgba(255,255,255,.5);border:1px dashed rgba(0,0,0,.3);border-radius:6px;color:rgba(43,33,25,.6);padding:.45rem;font-size:.7rem;cursor:pointer;text-align:left;font-family:'JetBrains Mono',monospace;box-shadow:none}
 .addcard:hover{color:var(--n-blue);background:rgba(255,255,255,.7)}
-.addcol{align-self:flex-start;flex:0 0 auto}
 
 /* Scratch — a wide strip stretched across the top, inline with the toolbar */
 .scratch{margin:.4rem 0 2.2rem;background:var(--card-y);border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.7rem 1rem .75rem;position:relative;box-shadow:0 6px 18px rgba(0,0,0,.3);transform:rotate(.3deg);width:100%}
@@ -137,7 +143,6 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
         <option value="">All</option>
         <option value="__untagged">Untagged</option>
       </select>
-      <button onclick="addColumn()">+ Column</button>
       <button onclick="addTag()">+ Tag</button>
       <a class="back" href="index.html">← Home</a>
     </div>
@@ -333,7 +338,7 @@ function render(){
   bd.innerHTML = '';
   board.columns.forEach(col => {
     const sec = document.createElement('section');
-    sec.className = 'col';
+    sec.className = 'col' + ((col.title||'').toLowerCase().indexOf('done') !== -1 ? ' done' : '');
     sec.dataset.col = col.id;
 
     const hdr = document.createElement('div');
@@ -374,10 +379,6 @@ function render(){
     bd.appendChild(sec);
   });
 
-  const addBtn = document.createElement('button');
-  addBtn.className = 'addcol'; addBtn.textContent = '+ Column';
-  addBtn.onclick = ()=>{ addColumn(); };
-  bd.appendChild(addBtn);
 }
 
 function cardEl(cd, col, idx){
@@ -456,6 +457,15 @@ function cardEl(cd, col, idx){
   db.title = cd.due ? 'Due ' + fmtDate(cd.due) + ' — click to change' : 'Set a due time';
   db.onclick = (e)=> setDue(cd, e);
   right.appendChild(db);
+  // Done checkbox — hidden on cards already sitting in the Done column
+  const inDoneCol = (col.title||'').toLowerCase().indexOf('done') !== -1;
+  if (!inDoneCol){
+    const done = document.createElement('button');
+    done.className = 'cdone'; done.textContent = '✓';
+    done.title = 'Mark done (move to Done)';
+    done.onclick = (e)=>{ e.stopPropagation(); markDone(cd, col); };
+    right.appendChild(done);
+  }
   const del = document.createElement('button');
   del.className = 'cdel'; del.textContent = '✕';
   del.onclick = ()=>{ col.cards = col.cards.filter(x=>x!==cd); scheduleSave(); render(); };
@@ -659,11 +669,12 @@ function findCard(id){
 }
 
 // ---------- Mutations ----------
-function addColumn(){
-  if (!board) return;
-  const title = prompt('Column name', 'Column ' + (board.columns.length+1));
-  if (title === null) return;
-  board.columns.push({id:uid('c'), title: title.trim() || 'Untitled', cards:[], collapsed:false});
+function markDone(cd, col){
+  let doneCol = board.columns.find(c => (c.title||'').toLowerCase().indexOf('done') !== -1);
+  if (!doneCol) doneCol = board.columns[board.columns.length - 1];
+  col.cards = col.cards.filter(x => x !== cd);
+  if (doneCol.collapsed) doneCol.collapsed = false;
+  doneCol.cards.push(cd);
   scheduleSave(); render();
 }
 function scratchToTask(){
