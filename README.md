@@ -42,7 +42,7 @@ at `functions/` and map 1:1 to URL paths.
 > view, but **writes require a key** checked server-side; `POST /api/kandan` returns
 > 403 without one (via `?key=` or `X-Kandan-Key` header). Two accepted keys:
 > **`KANDAN_KEY`** (secure random — the agent/CLI/Telegram credential, never public)
-> and **`KANDAN_UI_KEY`** (`danban` — the memorable front-door key the user types at
+> and **`KANDAN_UI_KEY`** (`dancan` — the memorable front-door key the user types at
 > the board gate). Both are secret bindings, never in this repo, so the gate phrase
 > stays out of public source. In the browser the gate asks for the key once per
 > session (sessionStorage, cleared on close) and autosave sends it. The chat/Telegram

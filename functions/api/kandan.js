@@ -17,7 +17,7 @@ function keysEqual(a, b) {
 // The write key may come from the query string (?key=...) or the X-Kandan-Key
 // header. Two keys are accepted:
 //   - KANDAN_KEY   (secure random) — the agent/CLI/Telegram credential, never public.
-//   - KANDAN_UI_KEY ("danban")      — the memorable front-door key the user types
+//   - KANDAN_UI_KEY ("dancan")     — the memorable front-door key the user types
 //                                     at the board gate. Stored as a secret binding,
 //                                     NOT in this repo, so it stays out of public source.
 // GET stays public (the board is a non-sensitive scratch pad); POST 403s without a
