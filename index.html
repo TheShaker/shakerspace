@@ -24,33 +24,19 @@
   <h1 class="title">dshaker.space</h1>
   <p class="sub">Mission Control</p>
 
-  <div class="appgrid">
-    <a class="appcard" href="dashboard.html">
-      <span class="appicon">🔬</span>
-      <span class="appname">Dashboard</span>
-      <span class="appdesc">System status &amp; diagnostics</span>
-    </a>
-    <a class="appcard" href="eggs.html">
-      <span class="appicon">🎲</span>
-      <span class="appname">Easter Eggs</span>
-      <span class="appdesc">Hidden endpoints await</span>
-    </a>
-    <a class="appcard" href="files.html">
-      <span class="appicon">📁</span>
-      <span class="appname">Files</span>
-      <span class="appdesc">Upload, download, manage</span>
-    </a>
-    <a class="appcard" href="kandan.html">
-      <span class="appicon">🗂️</span>
-      <span class="appname">Kandan</span>
-      <span class="appdesc">Kanban &amp; notes scratch pad</span>
-    </a>
-    <a class="appcard" href="contact.html">
-      <span class="appicon">📡</span>
-      <span class="appname">Contact</span>
-      <span class="appdesc">Reach the mothership</span>
-    </a>
+  <div class="solar" id="solarWrap">
+    <canvas id="solar"></canvas>
+    <div class="sol-tip" id="solTip"></div>
   </div>
+  <div class="sol-bar" id="solBar" role="status" aria-live="polite">🛰️ Hover or tap a world — <b>It only pauses for you</b></div>
+
+  <nav id="protoLinks" aria-label="Sub-sites" style="position:absolute;left:-9999px">
+    <a class="sr-only" tabindex="0" href="dashboard.html">🛰️ Dashboard — system status &amp; diagnostics</a>
+    <a class="sr-only" tabindex="0" href="eggs.html">🥚 Easter Eggs — hidden endpoints</a>
+    <a class="sr-only" tabindex="0" href="files.html">📁 Files — upload, download, manage</a>
+    <a class="sr-only" tabindex="0" href="kandan.html">🗂️ Kandan — kanban &amp; notes</a>
+    <a class="sr-only" tabindex="0" href="contact.html">📡 Contact — reach the mothership</a>
+  </nav>
 
   <div class="cli" id="cli">
     <div class="cliout" id="cliOut">
