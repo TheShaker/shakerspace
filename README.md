@@ -38,19 +38,32 @@ at `functions/` and map 1:1 to URL paths.
 
 ### The Kandan board (`/kandan`)
 
-`kandan.html` is a functional kanban / notes scratch pad: drag cards between
-columns (pointer-based, works on **mouse and touch/mobile** via the ⠿ grip),
-add/rename/delete columns, add/delete cards, tag cards **#home / #work** via the
-card dropdown, and add per-card detail notes. Below the board is a single
-persistent **Scratch** field (no more multi-note add button) whose contents can
-be turned straight into a kanban task with **→ Turn into task** (drops into the
-first column/Backlog). It's gated by the simple key `danban` (client-side, a
-fictional gag like the home console — nothing sensitive lives here). Board state
-is stored as one JSON doc in the `KANDAN` KV namespace, read/written through
-`functions/api/kandan.js`; the client also keeps a `localStorage` cache so the
-pad degrades gracefully if the API is down. Older board data (a `notes` array,
-cards without tags) is auto-migrated on load. Also reachable from the home
-console via the `KANDAN` command (gated under the SYSADMIN login).
+`kandan.html` is a functional kanban / notes scratch pad themed as a **corkboard**
+with **colorable sticky notes** (drag cards between columns via the ⠿ grip —
+pointer-based, works on mouse and touch — pick a sticky color, add per-card
+details). Features:
+
+- **Tags:** every card carries one tag; defaults are **#home / #work**, and you
+  can add custom tags (e.g. `#homelab`, `#school`) with the **+ Tag** button.
+  The **filter** dropdown shows only cards matching a tag (or untagged) across
+  all columns — e.g. "show all notes with #homelab".
+- **Collapsible columns:** each column (chevron ▲/▼) collapses; the **Done**
+  column starts collapsed as an archive. Collapsed state persists.
+- **Due times:** a **⏱** button on each card opens a date/time picker; a live
+  countdown ("1d 2h left", "30m left", "❗ 3h overdue") shows at the bottom of the
+  card and ticks down, flipping amber when <1h and red when overdue. Click the
+  countdown chip to clear the due time.
+- **Scratch:** a single persistent field below the board; **→ Turn into task**
+  converts its contents into a card in the first column (auto-tagging it with the
+  active filter if one is set).
+
+Gated by the simple key `danban` (client-side, a fictional gag like the home
+console — nothing sensitive lives here). Board state is stored as one JSON doc in
+the `KANDAN` KV namespace through `functions/api/kandan.js`; the client keeps a
+`localStorage` cache so the pad degrades gracefully if the API is down. Older
+board data (a `notes` array, cards without tags/colors/due) auto-migrates on
+load. Also reachable from the home console via the `KANDAN` command (gated under
+the SYSADMIN login).
 
 ### Enabling real file uploads (R2)
 
