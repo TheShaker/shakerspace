@@ -96,15 +96,16 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .addcard:hover{color:var(--n-blue);background:rgba(255,255,255,.7)}
 .addcol{align-self:flex-start;flex:0 0 auto}
 
-/* Scratch */
-.scratch{margin-top:2rem;background:var(--card-y);border:1px solid rgba(0,0,0,.12);border-radius:3px;padding:1.1rem 1.3rem .9rem;position:relative;box-shadow:0 6px 18px rgba(0,0,0,.3);transform:rotate(.6deg);max-width:520px}
+/* Scratch — a wide strip stretched across the top, inline with the toolbar */
+.scratch{margin:.4rem 0 2.2rem;background:var(--card-y);border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.7rem 1rem .75rem;position:relative;box-shadow:0 6px 18px rgba(0,0,0,.3);transform:rotate(.3deg);width:100%}
 .scratch::before{content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(1deg);width:74px;height:18px;background:var(--tape);box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.scratchhead{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.4rem;font-family:'Shadows Into Light',cursive}
-.scratchhead h2{font-size:1.5rem;letter-spacing:.02em;color:rgba(53,43,26,.85)}
+.scratchhead{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem;font-family:'Shadows Into Light',cursive}
+.scratchhead h2{font-size:1.4rem;letter-spacing:.02em;color:rgba(53,43,26,.85)}
 .scratchhead .hint{font-size:.72rem;color:rgba(53,43,26,.5);font-family:'JetBrains Mono',monospace}
-#scratch{width:100%;background:rgba(255,255,255,.3);border:none;border-bottom:1px dashed rgba(0,0,0,.25);color:#35291a;font-family:'Patrick Hand',cursive;font-size:1.2rem;min-height:4em;resize:vertical;padding:.35rem .2rem;outline:none;line-height:1.4}
-#scratch:focus{background:rgba(255,255,255,.45)}
-.scratchbar{display:flex;justify-content:flex-end;margin-top:.5rem}
+.scratchrow{display:flex;align-items:stretch;gap:.8rem}
+#scratch{flex:1;background:rgba(255,255,255,.32);border:none;border-bottom:1px dashed rgba(0,0,0,.25);color:#35291a;font-family:'Patrick Hand',cursive;font-size:1.2rem;min-height:2.6em;resize:vertical;padding:.35rem .5rem;outline:none;line-height:1.4}
+#scratch:focus{background:rgba(255,255,255,.5)}
+.scratchbar{display:flex;align-items:center}
 
 /* Gate */
 .gate{position:fixed;inset:0;background:#2a180b;display:flex;align-items:center;justify-content:center;z-index:50}
@@ -146,9 +147,11 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
       <h2>📝 Scratch &amp; Dump</h2>
       <span class="hint">one running note — turn it into a task anytime</span>
     </div>
-    <textarea id="scratch" placeholder="Brain-dump here…"></textarea>
-    <div class="scratchbar">
-      <button class="primary" onclick="scratchToTask()">→ Turn into task</button>
+    <div class="scratchrow">
+      <textarea id="scratch" placeholder="Brain-dump here…"></textarea>
+      <div class="scratchbar">
+        <button class="primary" onclick="scratchToTask()">→ Turn into task</button>
+      </div>
     </div>
   </div>
 
