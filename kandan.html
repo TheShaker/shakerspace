@@ -11,7 +11,7 @@
 :root{--n-purple:#7b2ff7;--n-blue:#2196f3;--n-pink:#f472b6;--star:#fbbf24;--void:#030014;--space:#0a0a2e;--c-bg:rgba(255,255,255,0.03);--c-bdr:rgba(255,255,255,0.06);--t1:#e2e8f0;--t2:rgba(226,232,240,0.5);--t3:rgba(226,232,240,0.3);--ok:#22c55e;--err:#ef4444}
 .light{--void:#f0f2f5;--space:#e2e5ea;--c-bg:rgba(0,0,0,0.03);--c-bdr:rgba(0,0,0,0.08);--t1:#1a1a2e;--t2:rgba(26,26,46,0.5);--t3:rgba(26,26,46,0.3);--c-hov:rgba(123,47,247,0.06)}
 body{font-family:'Inter',sans-serif;background:radial-gradient(1200px 600px at 20% -10%,rgba(123,47,247,.25),transparent 60%),radial-gradient(900px 500px at 100% 0%,rgba(33,150,243,.2),transparent 55%),var(--void);color:var(--t1);min-height:100vh;overflow-x:hidden}
-.wrap{max-width:1200px;margin:0 auto;padding:2rem 1.5rem 4rem}
+.wrap{max-width:1200px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
 .top{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
 .top h1{font-family:'Orbitron',sans-serif;font-size:1.4rem;letter-spacing:.14em;background:linear-gradient(135deg,var(--n-purple),var(--n-blue),var(--n-pink),var(--star));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .top .sub{color:var(--t2);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;margin-top:.25rem}
@@ -26,36 +26,44 @@ a.back:hover{color:var(--t1)}
 
 /* Board */
 .board{display:flex;gap:1rem;align-items:flex-start;overflow-x:auto;padding-bottom:1rem}
-.col{flex:1 1 260px;min-width:240px;max-width:300px;background:var(--c-bg);border:1px solid var(--c-bdr);border-radius:14px;padding:.75rem;display:flex;flex-direction:column;gap:.6rem}
+.col{flex:1 1 260px;min-width:240px;max-width:300px;background:var(--c-bg);border:1px solid var(--c-bdr);border-radius:14px;padding:.75rem;display:flex;flex-direction:column;gap:.6rem;transition:background .2s,border-color .2s}
+.col.ov{background:rgba(123,47,247,.08);border-color:rgba(123,47,247,.6)}
 .coldrag{display:flex;align-items:center;gap:.4rem}
-.coltitle{flex:1;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--n-blue);background:transparent;border:none;outline:none;color:var(--t1)}
+.coltitle{flex:1;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;background:transparent;border:none;outline:none;color:var(--t1)}
 .colcount{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--t3)}
 .mini{font-size:.7rem;padding:.2rem .5rem;opacity:.6}
 .mini:hover{opacity:1}
 .cards{display:flex;flex-direction:column;gap:.5rem;min-height:40px}
 .card{background:rgba(255,255,255,.04);border:1px solid var(--c-bdr);border-radius:10px;padding:.5rem .7rem .6rem;transition:all .2s}
 .card:hover{border-color:rgba(123,47,247,.5)}
-.card.dragging{opacity:.4;transform:rotate(2deg)}
-.cgrip{cursor:grab;color:var(--t3);font-size:.8rem;line-height:1;margin-bottom:.2rem;user-select:none;width:fit-content}
+.card.dragging{opacity:.35;transform:rotate(2deg)}
+.cgrip{cursor:grab;cursor:-webkit-grab;color:var(--t3);font-size:.9rem;line-height:1;margin-bottom:.2rem;user-select:none;-webkit-user-select:none;width:fit-content;touch-action:none}
+.cgrip:active{cursor:grabbing}
 .cgrip:hover{color:var(--n-blue)}
-.ctext{background:transparent;border:none;outline:none;color:var(--t1);font-family:'JetBrains Mono',monospace;font-size:.75rem;width:100%;resize:vertical;min-height:1.2em}
+.crow{display:flex;gap:.5rem;align-items:flex-start}
+.ctext{flex:1;background:transparent;border:none;outline:none;color:var(--t1);font-family:'JetBrains Mono',monospace;font-size:.75rem;width:100%;resize:vertical;min-height:1.2em}
 .cmeta{display:flex;justify-content:space-between;align-items:center;margin-top:.35rem;gap:.3rem}
 .cdel{font-size:.7rem;opacity:.4}
 .cdel:hover{opacity:1;color:var(--err)}
 .cnotes{width:100%;background:rgba(0,0,0,.2);border:1px solid var(--c-bdr);border-radius:6px;color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:.68rem;padding:.35rem .5rem;margin-top:.4rem;min-height:2.2em;resize:vertical;outline:none}
 .cnotes:focus{color:var(--t1);border-color:rgba(33,150,243,.4)}
+.ctagsel{font-family:'JetBrains Mono',monospace;font-size:.66rem;background:rgba(0,0,0,.3);color:var(--t2);border:1px solid var(--c-bdr);border-radius:6px;padding:.15rem .3rem;outline:none;cursor:pointer}
+.ctagsel:focus{border-color:var(--n-blue)}
+.tagchip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.62rem;padding:.1rem .4rem;border-radius:20px;letter-spacing:.03em}
+.tag-home{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.4)}
+.tag-work{background:rgba(33,150,243,.15);color:#7cc4ff;border:1px solid rgba(33,150,243,.4)}
 .addcard{background:transparent;border:1px dashed var(--c-bdr);border-radius:8px;color:var(--t3);padding:.45rem;font-size:.7rem;cursor:pointer;text-align:left;font-family:'JetBrains Mono',monospace}
 .addcard:hover{color:var(--n-blue);border-color:rgba(33,150,243,.5)}
 .addcol{align-self:flex-start;flex:0 0 auto}
 
-/* Notes (scratch pad) */
-.notessec{margin-top:2.5rem}
-.notessec h2{font-family:'Orbitron',sans-serif;font-size:.95rem;letter-spacing:.12em;color:var(--t2);margin-bottom:.8rem;text-transform:uppercase}
-.notes{display:flex;flex-wrap:wrap;gap:.8rem}
-.note{flex:1 1 200px;max-width:280px;background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:.6rem .7rem;position:relative}
-.note textarea{width:100%;background:transparent;border:none;outline:none;color:var(--t1);font-family:'JetBrains Mono',monospace;font-size:.72rem;min-height:5em;resize:vertical}
-.note .ndel{position:absolute;top:.35rem;right:.5rem;font-size:.7rem;opacity:.4}
-.note .ndel:hover{opacity:1;color:var(--err)}
+/* Scratch pad (single persistent field) */
+.scratch{margin-top:2.5rem;background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.25);border-radius:14px;padding:1rem 1.2rem}
+.scratchhead{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap;margin-bottom:.6rem}
+.scratchhead h2{font-family:'Orbitron',sans-serif;font-size:.9rem;letter-spacing:.12em;text-transform:uppercase;color:var(--t2)}
+.scratchhead .hint{font-size:.68rem;color:var(--t3);font-family:'JetBrains Mono',monospace}
+#scratch{width:100%;background:rgba(0,0,0,.25);border:1px solid rgba(251,191,36,.2);border-radius:8px;color:var(--t1);font-family:'JetBrains Mono',monospace;font-size:.78rem;min-height:6em;resize:vertical;padding:.6rem .7rem;outline:none;line-height:1.5}
+#scratch:focus{border-color:rgba(251,191,36,.6)}
+.scratchbar{display:flex;justify-content:flex-end;margin-top:.6rem}
 
 /* Gate */
 .gate{position:fixed;inset:0;background:var(--void);display:flex;align-items:center;justify-content:center;z-index:50}
@@ -68,7 +76,12 @@ a.back:hover{color:var(--t1)}
 .gaterr{color:var(--err);font-size:.7rem;min-height:1em;margin-bottom:.4rem;font-family:'JetBrains Mono',monospace}
 .hidden{display:none!important}
 .loading{color:var(--t2);text-align:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;padding:2rem}
-.emptynote{color:var(--t3);font-size:.7rem}
+.dragghost{position:fixed;pointer-events:none;z-index:999;background:rgba(123,47,247,.12);border:1px solid var(--n-purple);border-radius:10px;padding:.5rem .8rem;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--t1);box-shadow:0 8px 30px rgba(0,0,0,.4);max-width:240px;transform:translate(-50%,-130%)}
+@media (max-width:600px){
+  .board{flex-direction:column;align-items:stretch}
+  .col{max-width:none}
+  .coltitle{font-size:.8rem}
+}
 </style>
 </head>
 <body>
@@ -81,14 +94,20 @@ a.back:hover{color:var(--t1)}
     <div class="actions">
       <span class="saved" id="saved">✓ saved</span>
       <button onclick="addColumn()">+ Column</button>
-      <button onclick="addNote()">+ Note</button>
       <a class="back" href="index.html">← Home</a>
     </div>
   </div>
   <div class="board" id="board"></div>
-  <div class="notessec">
-    <h2>Scratch Notes</h2>
-    <div class="notes" id="notes"></div>
+
+  <div class="scratch">
+    <div class="scratchhead">
+      <h2>📝 Scratch</h2>
+      <span class="hint">one running note — turn it into a task anytime</span>
+    </div>
+    <textarea id="scratch" placeholder="Brain-dump here…"></textarea>
+    <div class="scratchbar">
+      <button class="primary" onclick="scratchToTask()">→ Turn into task</button>
+    </div>
   </div>
 </div>
 
@@ -111,11 +130,11 @@ a.back:hover{color:var(--t1)}
 const KEY = 'danban';
 const UI_LOCK = 'kandan_unlocked';
 const LS_CACHE = 'kandan_cache';
+const DEFAULT_TAGS = ['#home', '#work'];
 
-let board = null;   // {columns:[{id,title,cards:[{id,text,notes}]}], notes:[{id,text}]}
+let board = null;   // {columns:[{id,title,cards:[{id,text,notes,tag}]}], scratch:string}
 let saveTimer = null;
 let dirty = false;
-let dragCard = null;
 
 function uid(p){ return p + Math.random().toString(36).slice(2,9); }
 
@@ -138,13 +157,29 @@ async function loadBoard(){
     const r = await fetch('/api/kandan', {cache:'no-store'});
     if (!r.ok) throw new Error('HTTP '+r.status);
     const d = await r.json();
-    board = d && d.columns ? d : defaultBoard();
+    board = d && d.columns ? migrate(d) : defaultBoard();
   } catch(e) {
-    // Offline / API not deployed — fall back to a local cache so the pad still works.
-    try { board = JSON.parse(localStorage.getItem(LS_CACHE) || 'null') || defaultBoard(); }
+    try { board = migrate(JSON.parse(localStorage.getItem(LS_CACHE) || 'null')) || defaultBoard(); }
     catch(_){ board = defaultBoard(); }
   }
+  document.getElementById('scratch').value = board.scratch || '';
   render();
+}
+
+// Migrate older board shapes (cards w/o tag, notes-array scratch) into current.
+function migrate(d){
+  if (!d) return null;
+  if (!Array.isArray(d.columns)) return defaultBoard();
+  d.columns.forEach(c => {
+    (c.cards || []).forEach(cd => { if (!cd.tag) cd.tag = ''; if (!cd.notes) cd.notes = ''; });
+    if (!Array.isArray(c.cards)) c.cards = [];
+  });
+  // Legacy: single scratch note field; older "notes" array becomes a newline list.
+  if (d.scratch === undefined && Array.isArray(d.notes)) {
+    d.scratch = d.notes.map(n => n && n.text || '').join('\n\n');
+  }
+  if (typeof d.scratch !== 'string') d.scratch = '';
+  return d;
 }
 
 function defaultBoard(){
@@ -154,12 +189,15 @@ function defaultBoard(){
       {id:uid('c'), title:'Doing',   cards:[]},
       {id:uid('c'), title:'Done',    cards:[]}
     ],
-    notes: []
+    scratch: ''
   };
 }
 
+function captureScratch(){ if (board) board.scratch = document.getElementById('scratch').value; }
+
 function scheduleSave(){
   dirty = true;
+  captureScratch();
   localStorage.setItem(LS_CACHE, JSON.stringify(board));
   clearTimeout(saveTimer);
   saveTimer = setTimeout(save, 800);
@@ -167,6 +205,7 @@ function scheduleSave(){
 
 async function save(){
   const el = document.getElementById('saved');
+  captureScratch();
   try {
     const r = await fetch('/api/kandan', {
       method:'POST',
@@ -201,14 +240,13 @@ function render(){
 
     const cards = document.createElement('div');
     cards.className = 'cards';
-    cards.addEventListener('dragover', e=>{ e.preventDefault(); });
-    cards.addEventListener('drop', e=>{ e.preventDefault(); if(dragCard) moveCard(dragCard, col); });
+    cards.dataset.col = col.id;
 
-    col.cards.forEach(cd => cards.appendChild(cardEl(cd, col)));
+    col.cards.forEach((cd, idx) => cards.appendChild(cardEl(cd, col, idx)));
 
     const add = document.createElement('button');
     add.className = 'addcard'; add.textContent = '+ add card';
-    add.onclick = ()=>{ const cd={id:uid('k'),text:'',notes:''}; col.cards.push(cd); scheduleSave(); render(); };
+    add.onclick = ()=>{ const cd={id:uid('k'),text:'',notes:'',tag:''}; col.cards.push(cd); scheduleSave(); render(); };
 
     sec.append(hdr, cards, add);
     bd.appendChild(sec);
@@ -218,64 +256,136 @@ function render(){
   addBtn.className = 'addcol'; addBtn.textContent = '+ Column';
   addBtn.onclick = ()=>{ addColumn(); };
   bd.appendChild(addBtn);
-
-  // Notes
-  const notesBox = document.getElementById('notes');
-  const all = document.getElementById('wrap').querySelector('.notes');
-  if (!all) return;
-  notesBox.innerHTML = '';
-  if (!board.notes.length){
-    const e = document.createElement('div');
-    e.className = 'emptynote'; e.textContent = 'No notes yet — hit "+ Note".';
-    notesBox.appendChild(e);
-  }
-  board.notes.forEach(n => notesBox.appendChild(noteEl(n)));
 }
 
-function cardEl(cd, col){
+function cardEl(cd, col, idx){
   const div = document.createElement('div');
   div.className = 'card';
 
   const grip = document.createElement('div');
-  grip.className = 'cgrip'; grip.draggable = true; grip.textContent = '⠿';
+  grip.className = 'cgrip'; grip.textContent = '⠿';
   grip.title = 'Drag to move card';
-  grip.addEventListener('dragstart', ()=>{ dragCard = cd; div.classList.add('dragging'); });
-  grip.addEventListener('dragend', ()=>{ dragCard = null; div.classList.remove('dragging'); });
+  grip.addEventListener('pointerdown', e => startDrag(e, cd, col, div));
+  grip.addEventListener('touchstart', e => e.preventDefault(), {passive:false});
+
+  const row = document.createElement('div');
+  row.className = 'crow';
 
   const ta = document.createElement('textarea');
   ta.rows = 1; ta.placeholder = 'Card text…'; ta.value = cd.text;
   ta.style.height = 'auto';
   ta.oninput = ()=>{ ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; cd.text = ta.value; scheduleSave(); };
+  row.appendChild(ta);
+
+  // Tag dropdown
+  const sel = document.createElement('select');
+  sel.className = 'ctagsel'; sel.title = 'Tag';
+  const o0 = document.createElement('option'); o0.value=''; o0.textContent='—'; sel.appendChild(o0);
+  DEFAULT_TAGS.forEach(t => {
+    const o = document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o);
+  });
+  sel.value = cd.tag || '';
+  sel.onchange = ()=>{ cd.tag = sel.value || ''; scheduleSave(); render(); };
+  row.appendChild(sel);
 
   const meta = document.createElement('div');
   meta.className = 'cmeta';
-  const tags = document.createElement('span');
-  tags.className = 'colcount';
-  tags.textContent = col.cards.indexOf(cd)+1 + ' / ' + col.cards.length;
+  const left = document.createElement('span');
+  const chip = document.createElement('span');
+  if (cd.tag) {
+    chip.className = 'tagchip ' + (cd.tag === '#home' ? 'tag-home' : cd.tag === '#work' ? 'tag-work' : '');
+    chip.textContent = cd.tag;
+  }
+  left.appendChild(chip);
+  const pos = document.createElement('span');
+  pos.className = 'colcount'; pos.textContent = (idx+1) + ' / ' + col.cards.length;
+  left.appendChild(pos);
   const del = document.createElement('button');
   del.className = 'cdel'; del.textContent = '✕';
   del.onclick = ()=>{ col.cards = col.cards.filter(x=>x!==cd); scheduleSave(); render(); };
-  meta.append(tags, del);
+  meta.append(left, del);
 
   const nt = document.createElement('textarea');
   nt.className = 'cnotes'; nt.placeholder = 'details…'; nt.value = cd.notes || '';
   nt.oninput = ()=>{ cd.notes = nt.value; scheduleSave(); };
 
-  div.append(grip, ta, meta, nt);
+  div.append(grip, row, meta, nt);
   return div;
 }
 
-function noteEl(n){
-  const div = document.createElement('div');
-  div.className = 'note';
-  const ta = document.createElement('textarea');
-  ta.placeholder = 'Scratch note…'; ta.value = n.text;
-  ta.oninput = ()=>{ n.text = ta.value; scheduleSave(); };
-  const del = document.createElement('button');
-  del.className = 'ndel'; del.textContent = '✕';
-  del.onclick = ()=>{ board.notes = board.notes.filter(x=>x!==n); scheduleSave(); render(); };
-  div.append(ta, del);
-  return div;
+// ---------- Drag (pointer-based — works with mouse AND touch) ----------
+let dragCard = null, dragFrom = null, dragGhost = null, overCol = null;
+
+function colFromPoint(x, y){
+  const el = document.elementFromPoint(x, y);
+  const cardsEl = el && el.closest ? el.closest('.cards') : null;
+  if (cardsEl && cardsEl.dataset.col){
+    return board.columns.find(c => c.id === cardsEl.dataset.col) || null;
+  }
+  return null;
+}
+
+function startDrag(e, cd, col, div){
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  if (dragCard) { /* already dragging */ endDrag(); }
+  e.preventDefault();
+  dragCard = cd; dragFrom = col;
+  div.classList.add('dragging');
+  const ghost = document.createElement('div');
+  ghost.className = 'dragghost';
+  ghost.textContent = (cd.text || 'untitled').slice(0, 60);
+  document.body.appendChild(ghost);
+  dragGhost = ghost;
+  positionGhost(e);
+  // bind listeners
+  window.addEventListener('pointermove', onDragMove);
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('pointercancel', endDrag);
+  // prevent touch scrolling while dragging
+  document.body.style.overflow = 'hidden';
+  if (e.pointerType === 'touch' && e.preventDefault) e.preventDefault();
+}
+
+function positionGhost(e){
+  if (dragGhost) dragGhost.style.left = e.clientX + 'px';
+  if (dragGhost) dragGhost.style.top = e.clientY + 'px';
+}
+
+function onDragMove(e){
+  positionGhost(e);
+  e.preventDefault();
+  const col = colFromPoint(e.clientX, e.clientY);
+  // highlight
+  document.querySelectorAll('.col.ov').forEach(c => c.classList.remove('ov'));
+  if (col){
+    const sec = document.querySelector('.col[data-col="' + col.id + '"]');
+    if (sec) sec.classList.add('ov');
+  }
+  overCol = col;
+}
+
+function endDrag(e){
+  window.removeEventListener('pointermove', onDragMove);
+  window.removeEventListener('pointerup', endDrag);
+  window.removeEventListener('pointercancel', endDrag);
+  document.body.style.overflow = '';
+  if (dragGhost){ dragGhost.remove(); dragGhost = null; }
+  document.querySelectorAll('.card.dragging').forEach(c => c.classList.remove('dragging'));
+  document.querySelectorAll('.col.ov').forEach(c => c.classList.remove('ov'));
+  const target = overCol;
+  overCol = null;
+  if (dragCard){
+    if (target && target !== dragFrom){
+      const i = dragFrom.cards.indexOf(dragCard);
+      if (i !== -1) dragFrom.cards.splice(i, 1);
+      target.cards.push(dragCard);
+      scheduleSave(); render();
+    } else {
+      // just clear the dragging visual
+      render();
+    }
+  }
+  dragCard = null; dragFrom = null;
 }
 
 // ---------- Mutations ----------
@@ -286,18 +396,20 @@ function addColumn(){
   board.columns.push({id:uid('c'), title: title.trim() || 'Untitled', cards:[]});
   scheduleSave(); render();
 }
-function addNote(){
+
+function scratchToTask(){
   if (!board) return;
-  board.notes.push({id:uid('n'), text:''});
+  const text = document.getElementById('scratch').value.trim();
+  if (!text){ alert('Scratch is empty — nothing to turn into a task.'); return; }
+  const target = board.columns[0] /* Backlog by default */;
+  target.cards.push({ id:uid('k'), text: text, notes:'', tag:'' });
+  board.scratch = '';
+  document.getElementById('scratch').value = '';
   scheduleSave(); render();
-}
-function moveCard(cd, targetCol){
-  for (const c of board.columns){
-    const i = c.cards.indexOf(cd);
-    if (i !== -1){ c.cards.splice(i,1); break; }
-  }
-  targetCol.cards.push(cd);
-  scheduleSave(); render();
+  const el = document.getElementById('saved');
+  el.textContent = '✓ task created';
+  el.classList.add('on');
+  setTimeout(()=>{ el.textContent = '✓ saved'; el.classList.remove('on'); }, 1600);
 }
 
 // ---------- Init ----------
@@ -306,6 +418,7 @@ function openBoard(){
   document.getElementById('wrap').classList.remove('hidden');
   loadBoard();
 }
+document.getElementById('scratch').addEventListener('input', scheduleSave);
 if (localStorage.getItem(UI_LOCK) === '1'){
   openBoard();
 } else {

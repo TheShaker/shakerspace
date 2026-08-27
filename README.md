@@ -38,14 +38,19 @@ at `functions/` and map 1:1 to URL paths.
 
 ### The Kandan board (`/kandan`)
 
-`kandan.html` is a functional kanban / notes scratch pad (drag cards between
-columns, add/delete columns + cards + notes). It's gated by the simple key
-`danban` (client-side, a fictional gag like the home console — nothing sensitive
-lives here). The whole board state is stored as one JSON doc in the `KANDAN`
-KV namespace, read/written through `functions/api/kandan.js`; the client also
-keeps a `localStorage` cache so the pad degrades gracefully if the API is down.
-Also reachable from the home console via the `KANDAN` command (gated under the
-SYSADMIN login).
+`kandan.html` is a functional kanban / notes scratch pad: drag cards between
+columns (pointer-based, works on **mouse and touch/mobile** via the ⠿ grip),
+add/rename/delete columns, add/delete cards, tag cards **#home / #work** via the
+card dropdown, and add per-card detail notes. Below the board is a single
+persistent **Scratch** field (no more multi-note add button) whose contents can
+be turned straight into a kanban task with **→ Turn into task** (drops into the
+first column/Backlog). It's gated by the simple key `danban` (client-side, a
+fictional gag like the home console — nothing sensitive lives here). Board state
+is stored as one JSON doc in the `KANDAN` KV namespace, read/written through
+`functions/api/kandan.js`; the client also keeps a `localStorage` cache so the
+pad degrades gracefully if the API is down. Older board data (a `notes` array,
+cards without tags) is auto-migrated on load. Also reachable from the home
+console via the `KANDAN` command (gated under the SYSADMIN login).
 
 ### Enabling real file uploads (R2)
 
