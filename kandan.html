@@ -49,7 +49,7 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .colchev:hover{background:rgba(0,0,0,.1)}
 .coltitle{flex:1;font-family:'Shadows Into Light',cursive;font-size:1.25rem;letter-spacing:.02em;background:transparent;border:none;outline:none;color:var(--t1);border-bottom:1px dashed rgba(0,0,0,.2)}
 .colcount{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:rgba(43,33,25,.5)}
-.mini{font-size:.7rem;padding:.15rem .45rem;opacity:.6;box-shadow:none;background:transparent}
+.mini{font-size:.7rem;padding:.15rem .45rem;opacity:.6;box-shadow:none;background:transparent;overflow:hidden}
 .mini:hover{opacity:1;background:rgba(0,0,0,.1)}
 .cards{display:flex;flex-direction:column;gap:.7rem;min-height:30px}
 .cards.collapsed{display:none}
@@ -74,7 +74,7 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .crow{display:flex;gap:.45rem;align-items:flex-start}
 .ctext{flex:1;background:transparent;border:none;outline:none;color:inherit;font-family:'Shadows Into Light',cursive;font-size:1.12rem;width:100%;resize:none;min-height:1.2em;line-height:1.25}
 .cmeta{display:flex;justify-content:space-between;align-items:center;margin-top:.3rem;gap:.3rem;flex-wrap:wrap}
-.cdel{font-size:.75rem;opacity:.4;background:transparent;box-shadow:none;border:none}
+.cdel{font-size:.75rem;opacity:.4;background:transparent;box-shadow:none;border:none;overflow:hidden}
 .cdel:hover{opacity:1;color:var(--err);background:transparent}
 .cnotes{width:100%;background:rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.12);border-radius:4px;color:rgba(53,43,26,.75);font-family:'JetBrains Mono',monospace;font-size:.66rem;padding:.3rem .45rem;margin-top:.35rem;min-height:2em;resize:vertical;outline:none}
 .cnotes:focus{background:rgba(255,255,255,.4)}
@@ -526,7 +526,7 @@ function toLocalInput(d){
 function clearDue(cd){ cd.due = null; scheduleSave(); render(); }
 
 // ---------- Drag (pointer-based) ----------
-let dragCard = null, dragFrom = null, dragGhost = null, overCol = null, dragY = 0;
+let dragCard = null, dragFrom = null, dragGhost = null, overCol = null, dragY = 0, dragX = null, dragCancelled = false;
 function colFromPoint(x, y){
   const el = document.elementFromPoint(x, y);
   const colEl = el && el.closest ? el.closest('.col') : null;
@@ -550,7 +550,8 @@ function startDrag(e, cd, col, div){
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   if (dragCard) endDrag();
   e.preventDefault();
-  dragCard = cd; dragFrom = col;
+  dragCard = cd; dragFrom = col; dragCancelled = false;
+  dragX = e.clientX; dragY = e.clientY;
   div.classList.add('dragging');
   const ghost = document.createElement('div');
   ghost.className = 'dragghost';
@@ -560,15 +561,16 @@ function startDrag(e, cd, col, div){
   positionGhost(e);
   window.addEventListener('pointermove', onDragMove);
   window.addEventListener('pointerup', endDrag);
-  window.addEventListener('pointercancel', endDrag);
+  window.addEventListener('pointercancel', onDragCancel);
   document.body.style.overflow = 'hidden';
 }
+function onDragCancel(){ dragCancelled = true; endDrag(); }
 function positionGhost(e){
   if (dragGhost){ dragGhost.style.left = e.clientX+'px'; dragGhost.style.top = e.clientY+'px'; }
 }
 function onDragMove(e){
   positionGhost(e); e.preventDefault();
-  dragY = e.clientY;
+  dragY = e.clientY; dragX = e.clientX;
   document.querySelectorAll('.col.ov').forEach(c=>c.classList.remove('ov'));
   const col = colFromPoint(e.clientX, e.clientY);
   if (col){ const sec = document.querySelector('.col[data-col="'+col.id+'"]'); if (sec) sec.classList.add('ov'); }
@@ -577,16 +579,18 @@ function onDragMove(e){
 function endDrag(){
   window.removeEventListener('pointermove', onDragMove);
   window.removeEventListener('pointerup', endDrag);
-  window.removeEventListener('pointercancel', endDrag);
+  window.removeEventListener('pointercancel', onDragCancel);
   document.body.style.overflow = '';
   if (dragGhost){ dragGhost.remove(); dragGhost=null; }
   document.querySelectorAll('.card.dragging').forEach(c=>c.classList.remove('dragging'));
   document.querySelectorAll('.col.ov').forEach(c=>c.classList.remove('ov'));
-  const target = overCol, cd = dragCard, from = dragFrom; overCol = null;
-  dragCard = null; dragFrom = null;
+  const cancelled = dragCancelled;
+  const target = overCol, cd = dragCard, from = dragFrom, dropX = dragX;
+  overCol = null; dragCard = null; dragFrom = null; dragX = null; dragCancelled = false;
   if (!cd || !from) return;
   const srcIdx = from.cards.indexOf(cd);
   if (srcIdx === -1){ render(); return; }
+  if (cancelled){ render(); return; }
   if (target){
     // Determine the insertion array-index in the target column from the drop point.
     let k;
@@ -603,6 +607,26 @@ function endDrag(){
       target.cards.splice(k, 0, cd);
     }
     scheduleSave(); render();
+  } else if (dropX !== null){
+    // Flick: released in the gutter beside the source column — hop to the
+    // adjacent column to the left or right, no precise placement needed.
+    const sColIdx = board.columns.indexOf(from);
+    const sec = document.querySelector('.col[data-col="'+from.id+'"]');
+    const rect = sec ? sec.getBoundingClientRect() : null;
+    let destIdx = -1;
+    if (rect){
+      if (dropX < rect.left) destIdx = sColIdx - 1;        // flick left
+      else if (dropX > rect.right) destIdx = sColIdx + 1;  // flick right
+    }
+    if (destIdx >= 0 && destIdx < board.columns.length){
+      const dest = board.columns[destIdx];
+      from.cards.splice(srcIdx, 1);
+      if (dest.collapsed) dest.collapsed = false;
+      dest.cards.push(cd);
+      scheduleSave(); render();
+    } else {
+      render();
+    }
   } else {
     render();
   }
