@@ -392,10 +392,13 @@ function cardEl(cd, col, idx){
   row.className = 'crow';
 
   const ta = document.createElement('textarea');
+  ta.className = 'ctext';
   ta.rows = 1; ta.placeholder = 'Task…'; ta.value = cd.text;
-  ta.style.height = 'auto';
   ta.oninput = ()=>{ ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; cd.text = ta.value; scheduleSave(); };
   row.appendChild(ta);
+  // Size after the card is mounted so saved multi-line / long titles render fully
+  // on load — a detached element reports scrollHeight=0, so we wait a frame.
+  requestAnimationFrame(()=>{ ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; });
 
   // Tag dropdown (custom tag list)
   const sel = document.createElement('select');
@@ -448,7 +451,7 @@ function cardEl(cd, col, idx){
   const db = document.createElement('button');
   db.className = 'duebtn'; db.textContent = cd.due ? '⏱' : '⏱ +';
   db.title = cd.due ? 'Due ' + fmtDate(cd.due) + ' — click to change' : 'Set a due time';
-  db.onclick = ()=> setDue(cd);
+  db.onclick = (e)=> setDue(cd, e);
   right.appendChild(db);
   const del = document.createElement('button');
   del.className = 'cdel'; del.textContent = '✕';
@@ -501,12 +504,18 @@ function updateDueLabel(el, cd){
     el.className = 'cdue due';
   }
 }
-function setDue(cd){
+function setDue(cd, e){
   const picker = document.getElementById('duePicker');
   picker._card = cd;
   const base = cd.due ? new Date(cd.due) : new Date(Date.now() + 24*60*60*1000);
   picker.value = toLocalInput(base);
-  if (picker.showPicker){ try { picker.showPicker(); } catch(e){ picker.focus(); } }
+  // Park the (native) picker right under the pointer before opening. The native
+  // popup anchors to the input element, so when it sat at left:-9999px the popup
+  // opened off-screen on desktop (= "nothing happens"). Mobile is unaffected.
+  const x = e && e.clientX ? e.clientX : Math.round(innerWidth/2);
+  const y = e && e.clientY ? e.clientY : 40;
+  picker.style.cssText = 'position:fixed;left:'+x+'px;top:'+y+'px;opacity:0;width:2px;height:2px;pointer-events:none;z-index:99';
+  if (picker.showPicker){ try { picker.showPicker(); } catch(err){ picker.focus(); } }
   else picker.click();
 }
 function toLocalInput(d){
