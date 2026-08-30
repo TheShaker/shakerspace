@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="starGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="45%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="42%" r="65%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- soft halo so it reads on any tab background -->
+  <circle cx="64" cy="64" r="62" fill="url(#halo)"/>
+
+  <!-- five-pointed star -->
+  <path d="M64,4 L79.28,42.97 L121.06,45.46 L88.73,72.03 L99.27,112.54 L64,90 L28.73,112.54 L39.27,72.03 L6.94,45.46 L48.72,42.97 Z"
+        fill="url(#starGrad)"/>
+
+  <!-- subtle specular glint -->
+  <path d="M64,4 L79.28,42.97 L64,40.5 Z" fill="#feffd9" opacity="0.55"/>
+</svg>
