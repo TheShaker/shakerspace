@@ -627,7 +627,7 @@ dropZone.addEventListener('click', () => document.getElementById('fileInput').cl
     {label:'Files',      icon:'📁', desc:'Upload, download, manage',      href:'files.html',     color:'#2196f3'},
     {label:'Kandan',     icon:'🗂️', desc:'Kanban & notes scratch pad',   href:'kandan.html',    color:'#fbbf24'},
     {label:'Contact',    icon:'📡', desc:'Reach the mothership',          href:'contact.html',   color:'#7b2ff7'},
-    {label:'Signup',     icon:'🪧', desc:'Sign-up display hub',            href:'signup/',        color:'#f472b6'},
+    {label:'Signup',     icon:'🪧', desc:'Sign-up display hub',            href:'signup/',        color:'#fb923c'},
   ];
 
   const ctx = cvs.getContext('2d');
