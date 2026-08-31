@@ -52,6 +52,11 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .colcount{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:rgba(43,33,25,.5)}
 .mini{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;padding:0;line-height:1;font-size:.7rem;opacity:.6;box-shadow:none;background:transparent;overflow:hidden;border-radius:6px}
 .mini:hover{opacity:1;background:rgba(0,0,0,.1)}
+.mini.on{opacity:1;color:var(--n-purple);background:rgba(255,255,255,.55)}
+/* Per-column wrap: cap card titles at ~2 lines so a long column doesn't balloon.
+   Toggle with the ⇕/≡ button on the column header. */
+.col.wrap .ctext{height:2.6em !important;resize:none;overflow-y:auto}
+.col.wrap .crow{align-items:flex-start}
 .cards{display:flex;flex-direction:column;gap:.7rem;min-height:30px}
 .cards.collapsed{display:none}
 .colempty{font-family:'Shadows Into Light',cursive;color:rgba(43,33,25,.4);font-size:1rem;text-align:center;padding:.4rem;display:none}
@@ -265,6 +270,7 @@ function migrate(d){
   d.columns.forEach(c => {
     if (!Array.isArray(c.cards)) c.cards = [];
     if (c.collapsed === undefined) c.collapsed = (c.title || '').toLowerCase().indexOf('done') !== -1;
+    if (c.wrap === undefined) c.wrap = false;
     (c.cards || []).forEach(cd => {
       if (!cd.tag) cd.tag = '';
       if (!cd.notes) cd.notes = '';
@@ -294,9 +300,9 @@ function migrate(d){
 function defaultBoard(){
   return {
     columns: [
-      {id:uid('c'), title:'Backlog', cards:[], collapsed:false},
-      {id:uid('c'), title:'Doing',   cards:[], collapsed:false},
-      {id:uid('c'), title:'Done',    cards:[], collapsed:true}
+      {id:uid('c'), title:'Backlog', cards:[], collapsed:false, wrap:true},
+      {id:uid('c'), title:'Doing',   cards:[], collapsed:false, wrap:false},
+      {id:uid('c'), title:'Done',    cards:[], collapsed:true,  wrap:false}
     ],
     scratch: '',
     horizon: [],
@@ -365,7 +371,7 @@ function render(){
   bd.innerHTML = '';
   board.columns.forEach(col => {
     const sec = document.createElement('section');
-    sec.className = 'col' + ((col.title||'').toLowerCase().indexOf('done') !== -1 ? ' done' : '');
+    sec.className = 'col' + ((col.title||'').toLowerCase().indexOf('done') !== -1 ? ' done' : '') + (col.wrap ? ' wrap' : '');
     sec.dataset.col = col.id;
 
     const hdr = document.createElement('div');
@@ -380,10 +386,14 @@ function render(){
     inp.oninput = ()=>{ col.title = inp.value; scheduleSave(); };
     const cnt = document.createElement('span');
     cnt.className = 'colcount'; cnt.textContent = col.cards.length;
+    const wrap = document.createElement('button');
+    wrap.className = 'mini' + (col.wrap ? ' on' : '');
+    wrap.textContent = col.wrap ? '≡' : '⇕'; wrap.title = 'Wrap card titles: on = cap at 2 lines (toggles this column)';
+    wrap.onclick = ()=>{ col.wrap = !col.wrap; scheduleSave(); render(); };
     const del = document.createElement('button');
     del.className = 'mini'; del.textContent = '✕'; del.title='Delete column';
     del.onclick = ()=>{ if(confirm('Delete column "'+col.title+'" and its cards?')){ board.columns = board.columns.filter(c=>c!==col); scheduleSave(); render(); } };
-    hdr.append(ch, inp, cnt, del);
+    hdr.append(ch, inp, cnt, wrap, del);
 
     const cards = document.createElement('div');
     cards.className = 'cards' + (col.collapsed ? ' collapsed' : '');
@@ -653,16 +663,21 @@ function endDrag(){
     }
     scheduleSave(); render();
   } else if (dropX !== null){
-    // Dropped in the gutter between/around columns. If released ABOVE the
-    // whole board strip -> promote to Long Horizon (park it for later).
-    const boardEl = document.getElementById('board');
-    const boardTop = boardEl ? boardEl.getBoundingClientRect().top : null;
-    if (boardTop !== null && dragY < boardTop){
-      from.cards.splice(srcIdx, 1);
-      if (!board.horizon) board.horizon = [];
-      board.horizon.push(cd);
-      scheduleSave(); render();
-      return;
+    // Dropped in the gutter between/around columns.
+    // Promote-to-horizon(above the board strip) only applies when the card came
+    // from a REAL board column. A horizon card dragged within its own strip must
+    // NOT re-promote itself (its pseudo-column sits above the board, so it would
+    // just get flipped to the end of the list).
+    if (board.columns.includes(from)){
+      const boardEl = document.getElementById('board');
+      const boardTop = boardEl ? boardEl.getBoundingClientRect().top : null;
+      if (boardTop !== null && dragY < boardTop){
+        from.cards.splice(srcIdx, 1);
+        if (!board.horizon) board.horizon = [];
+        board.horizon.push(cd);
+        scheduleSave(); render();
+        return;
+      }
     }
     // Flick: released in the gutter beside the source column — hop to the
     // adjacent column to the left or right, no precise placement needed.
