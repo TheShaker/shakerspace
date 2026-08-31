@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SignUp Display</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+</head>
+<body>
+
+  <!-- ── NAV BAR (auto-hides on inactivity) ── -->
+  <nav id="navbar">
+    <span class="brand">⬡ SignUp Display</span>
+    <div class="nav-buttons">
+      <button class="nav-btn active" data-view="clock">🕐 Clock</button>
+      <button class="nav-btn" data-view="image">🖼 Image</button>
+      <button class="nav-btn" data-view="slides">📊 Slides</button>
+    </div>
+    <button id="settings-toggle" title="Settings">⚙</button>
+    <button id="fs-btn" title="Toggle Fullscreen">⛶</button>
+  </nav>
+
+  <!-- ── SETTINGS PANEL ── -->
+  <aside id="settings-panel" hidden>
+    <h3>Settings</h3>
+
+    <section>
+      <label>Image URL</label>
+      <input id="img-url-input" type="url" placeholder="https://example.com/photo.jpg" />
+      <button id="img-url-apply">Apply</button>
+      <label class="toggle-row" style="margin-top:6px">
+        <input id="img-fit" type="checkbox" />
+        <span>Fit to screen <small>(zero margins when aspect ratio matches)</small></span>
+      </label>
+    </section>
+
+    <section>
+      <label>Google Slides URL <small>(publish → embed link)</small></label>
+      <input id="slides-url-input" type="url"
+        placeholder="https://docs.google.com/presentation/d/.../embed?..." />
+      <button id="slides-url-apply">Apply</button>
+    </section>
+
+    <section>
+      <label>Clock style</label>
+      <select id="clock-style">
+        <option value="digital">Digital</option>
+        <option value="minimal">Minimal</option>
+      </select>
+      <label class="toggle-row" style="margin-top:6px">
+        <input id="clock-24h" type="checkbox" />
+        <span>24-hour format</span>
+      </label>
+      <label class="toggle-row" style="margin-top:6px">
+        <input id="clock-seconds" type="checkbox" />
+        <span>Display seconds</span>
+      </label>
+    </section>
+
+    <section id="clock-color-section">
+      <label>Clock background colour</label>
+      <div class="hue-row">
+        <input id="clock-hue" type="range" min="0" max="360" value="0" class="hue-slider" />
+        <span id="clock-hue-val">0</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Saturation</span>
+        <input id="clock-sat" type="range" min="0" max="100" value="0" />
+        <span id="clock-sat-val">0%</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Lightness</span>
+        <input id="clock-lit" type="range" min="0" max="60" value="0" />
+        <span id="clock-lit-val">0%</span>
+      </div>
+      <label class="toggle-row">
+        <input id="clock-gradient" type="checkbox" />
+        <span>Gradient (hue sweep)</span>
+      </label>
+      <div class="slider-row" id="gradient-angle-row" style="display:none">
+        <span class="slider-label">Angle</span>
+        <input id="clock-grad-angle" type="range" min="0" max="360" value="135" />
+        <span id="clock-grad-angle-val">135</span>
+      </div>
+      <button id="clock-bg-reset">Reset</button>
+    </section>
+
+    <button id="settings-close">✕ Close</button>
+  </aside>
+
+  <!-- ── VIEWS ── -->
+  <main id="views">
+
+    <!-- CLOCK VIEW -->
+    <div id="clock-view" class="view active">
+      <div id="clock-wrapper">
+        <div id="clock-time">00:00:00</div>
+        <div id="clock-date"></div>
+      </div>
+    </div>
+
+    <!-- IMAGE VIEW -->
+    <div id="image-view" class="view">
+      <img id="display-image" src="" alt="Display image" />
+      <p id="image-placeholder">
+        No image set.<br/>Open <strong>Settings ⚙</strong> and paste an image URL.
+      </p>
+    </div>
+
+    <!-- SLIDES VIEW -->
+    <div id="slides-view" class="view">
+      <iframe id="slides-iframe" src="" allowfullscreen
+        title="Google Slides presentation"></iframe>
+      <p id="slides-placeholder">
+        No presentation set.<br/>Open <strong>Settings ⚙</strong> and paste your
+        published Google Slides embed URL.
+      </p>
+    </div>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

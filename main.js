@@ -135,7 +135,7 @@ function thock() {
     },
     SITES: () => {
       if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
-      return ['Site inventory:', '  1. <span class="clih">DASHBOARD</span>   — dshaker.space', '  2. <span class="clih">EGGS</span>        — easter egg laboratory', '  3. <span class="clih">FILES</span>       — file hosting', '  4. <span class="clih">CONTACT</span>     — identity records', '  5. <span class="clih">RETRO</span>       — <span class="clir">??? classified ???</span>', '  6. <span class="clih">KANDAN</span>      — kanban / notes board', '  7. <span class="clih">API</span>         — <span class="clir">planned</span>'];
+      return ['Site inventory:', '  1. <span class="clih">DASHBOARD</span>   — dshaker.space', '  2. <span class="clih">EGGS</span>        — easter egg laboratory', '  3. <span class="clih">FILES</span>       — file hosting', '  4. <span class="clih">CONTACT</span>     — identity records', '  5. <span class="clih">RETRO</span>       — <span class="clir">??? classified ???</span>', '  6. <span class="clih">KANDAN</span>      — kanban / notes board', '  7. <span class="clih">SIGNUP</span>      — sign-up display hub', '  8. <span class="clih">API</span>         — <span class="clir">planned</span>'];
     },
     INFO: () => {
       if (!loggedIn) return ['<span class="clie">ACCESS DENIED</span> — insufficient clearance.'];
@@ -627,6 +627,7 @@ dropZone.addEventListener('click', () => document.getElementById('fileInput').cl
     {label:'Files',      icon:'📁', desc:'Upload, download, manage',      href:'files.html',     color:'#2196f3'},
     {label:'Kandan',     icon:'🗂️', desc:'Kanban & notes scratch pad',   href:'kandan.html',    color:'#fbbf24'},
     {label:'Contact',    icon:'📡', desc:'Reach the mothership',          href:'contact.html',   color:'#7b2ff7'},
+    {label:'Signup',     icon:'🪧', desc:'Sign-up display hub',            href:'signup/',        color:'#f472b6'},
   ];
 
   const ctx = cvs.getContext('2d');
