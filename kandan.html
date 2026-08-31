@@ -111,8 +111,15 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .sbmode:hover{color:var(--n-purple);opacity:1;background:rgba(255,255,255,.4)}
 .sbmode.active{color:var(--n-purple);opacity:1;background:rgba(255,255,255,.55)}
 .sbmode .cnt{font-family:'JetBrains Mono',monospace;font-size:.74rem;font-weight:500;background:rgba(0,0,0,.08);border-radius:20px;padding:.05rem .42rem;margin-left:.25rem;vertical-align:middle}
+/* Long Horizon mode: the whole box shifts to a purple sticky + the strip
+   becomes a single horizontally-scrollable timeline row. */
+.scratch.shz{background:linear-gradient(135deg,#e6dfff,#cbb7ff 60%,#b39dff);color:#2a1d45;box-shadow:0 6px 18px rgba(30,16,70,.45)}
+.scratch.shz::before{background:rgba(255,255,255,.6)}
+.scratch.shz .sbmode{color:rgba(42,29,69,.7)}
+.scratch.shz .sbmode.active{color:#4315a3;background:rgba(255,255,255,.5)}
 .horizonrow{display:flex;flex-direction:column;gap:.6rem;margin-top:.25rem}
-.hzcards{display:flex;flex-direction:column;gap:.7rem;min-height:20px}
+.hzcards{display:flex;flex-direction:row;gap:.7rem;overflow-x:auto;padding:.15rem 0 .5rem;align-items:flex-start;min-height:20px;scrollbar-width:thin}
+.hzcards .card{flex:0 0 auto;width:250px}
 .scratchrow{display:flex;align-items:stretch;gap:.8rem}
 #scratch{flex:1;background:rgba(255,255,255,.32);border:none;border-bottom:1px dashed rgba(0,0,0,.25);color:#35291a;font-family:'Patrick Hand',cursive;font-size:1.2rem;min-height:2.6em;resize:vertical;padding:.35rem .5rem;outline:none;line-height:1.4}
 #scratch:focus{background:rgba(255,255,255,.5)}
@@ -646,6 +653,17 @@ function endDrag(){
     }
     scheduleSave(); render();
   } else if (dropX !== null){
+    // Dropped in the gutter between/around columns. If released ABOVE the
+    // whole board strip -> promote to Long Horizon (park it for later).
+    const boardEl = document.getElementById('board');
+    const boardTop = boardEl ? boardEl.getBoundingClientRect().top : null;
+    if (boardTop !== null && dragY < boardTop){
+      from.cards.splice(srcIdx, 1);
+      if (!board.horizon) board.horizon = [];
+      board.horizon.push(cd);
+      scheduleSave(); render();
+      return;
+    }
     // Flick: released in the gutter beside the source column — hop to the
     // adjacent column to the left or right, no precise placement needed.
     const sColIdx = board.columns.indexOf(from);
@@ -682,6 +700,7 @@ function moveCard(col, cd, delta){
 let topMode = 'scratch';
 function setTopMode(m){
   topMode = m;
+  document.getElementById('topbox').classList.toggle('shz', m === 'horizon');
   document.getElementById('paneScratch').style.display = (m === 'scratch') ? '' : 'none';
   document.getElementById('paneHorizon').style.display = (m === 'horizon') ? '' : 'none';
   document.getElementById('modeScratch').classList.toggle('active', m === 'scratch');
