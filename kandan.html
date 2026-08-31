@@ -103,12 +103,16 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .addcard{background:rgba(255,255,255,.5);border:1px dashed rgba(0,0,0,.3);border-radius:6px;color:rgba(43,33,25,.6);padding:.45rem;font-size:.7rem;cursor:pointer;text-align:left;font-family:'JetBrains Mono',monospace;box-shadow:none}
 .addcard:hover{color:var(--n-blue);background:rgba(255,255,255,.7)}
 
-/* Scratch — a wide strip stretched across the top, inline with the toolbar */
+/* Top box — dual-mode: Scratch & Dump OR Long Horizon (toggle via header) */
 .scratch{margin:.4rem 0 2.2rem;background:var(--card-y);border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.7rem 1rem .75rem;position:relative;box-shadow:0 6px 18px rgba(0,0,0,.3);transform:rotate(.3deg);width:100%}
 .scratch::before{content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(1deg);width:74px;height:18px;background:var(--tape);box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.scratchhead{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem;font-family:'Shadows Into Light',cursive}
-.scratchhead h2{font-size:1.4rem;letter-spacing:.02em;color:rgba(53,43,26,.85)}
-.scratchhead .hint{font-size:.72rem;color:rgba(53,43,26,.5);font-family:'JetBrains Mono',monospace}
+.scratchhead{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap}
+.sbmode{font-family:'Shadows Into Light',cursive;font-size:1.3rem;letter-spacing:.02em;color:rgba(53,43,26,.6);background:transparent;border:none;box-shadow:none;padding:.15rem .35rem;border-radius:6px;opacity:.75;transition:all .2s}
+.sbmode:hover{color:var(--n-purple);opacity:1;background:rgba(255,255,255,.4)}
+.sbmode.active{color:var(--n-purple);opacity:1;background:rgba(255,255,255,.55)}
+.sbmode .cnt{font-family:'JetBrains Mono',monospace;font-size:.74rem;font-weight:500;background:rgba(0,0,0,.08);border-radius:20px;padding:.05rem .42rem;margin-left:.25rem;vertical-align:middle}
+.horizonrow{display:flex;flex-direction:column;gap:.6rem;margin-top:.25rem}
+.hzcards{display:flex;flex-direction:column;gap:.7rem;min-height:20px}
 .scratchrow{display:flex;align-items:stretch;gap:.8rem}
 #scratch{flex:1;background:rgba(255,255,255,.32);border:none;border-bottom:1px dashed rgba(0,0,0,.25);color:#35291a;font-family:'Patrick Hand',cursive;font-size:1.2rem;min-height:2.6em;resize:vertical;padding:.35rem .5rem;outline:none;line-height:1.4}
 #scratch:focus{background:rgba(255,255,255,.5)}
@@ -148,16 +152,20 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
       <a class="back" href="index.html">← Home</a>
     </div>
   </div>
-  <div class="scratch">
+  <div class="scratch" id="topbox">
     <div class="scratchhead">
-      <h2>📝 Scratch &amp; Dump</h2>
-      <span class="hint">one running note — turn it into a task anytime</span>
+      <button class="sbmode active" id="modeScratch" onclick="setTopMode('scratch')">📝 Scratch &amp; Dump</button>
+      <button class="sbmode" id="modeHorizon" onclick="setTopMode('horizon')">🌅 Long Horizon <span class="cnt" id="hzCount">0</span></button>
     </div>
-    <div class="scratchrow">
+    <div class="scratchrow" id="paneScratch">
       <textarea id="scratch" placeholder="Brain-dump here…"></textarea>
       <div class="scratchbar">
         <button class="primary" onclick="scratchToTask()">→ Turn into task</button>
       </div>
+    </div>
+    <div class="horizonrow" id="paneHorizon" style="display:none">
+      <button class="addcard" onclick="addHorizon()">+ add long-horizon card</button>
+      <div class="hzcards" id="hzCards"></div>
     </div>
   </div>
 
@@ -262,6 +270,16 @@ function migrate(d){
     d.scratch = d.notes.map(n => n && n.text || '').join('\n');
   }
   if (typeof d.scratch !== 'string') d.scratch = '';
+  if (!Array.isArray(d.horizon)) d.horizon = [];
+  d.horizon.forEach(cd => {
+    if (!cd || typeof cd !== 'object') return;
+    if (!cd.text) cd.text = '';
+    if (!cd.notes) cd.notes = '';
+    if (!cd.tag) cd.tag = '';
+    if (!cd.color) cd.color = '';
+    if (!cd.due) cd.due = null;
+    if (cd.tag && !tags.includes(cd.tag) && !DEFAULT_TAGS.includes(cd.tag)) tags.push(cd.tag);
+  });
   d.tags = tags;
   return d;
 }
@@ -274,6 +292,7 @@ function defaultBoard(){
       {id:uid('c'), title:'Done',    cards:[], collapsed:true}
     ],
     scratch: '',
+    horizon: [],
     tags: DEFAULT_TAGS.slice()
   };
 }
@@ -380,6 +399,11 @@ function render(){
     bd.appendChild(sec);
   });
 
+  // Long Horizon — render into the top-box panel + live count
+  const hz = document.getElementById('hzCards');
+  hz.innerHTML = '';
+  (board.horizon || []).forEach((cd, idx) => hz.appendChild(horizonCardEl(cd, idx)));
+  document.getElementById('hzCount').textContent = (board.horizon || []).length;
 }
 
 function cardEl(cd, col, idx){
@@ -654,6 +678,105 @@ function moveCard(col, cd, delta){
   scheduleSave(); render();
 }
 
+// ---------- Long Horizon (dual-mode top box) ----------
+let topMode = 'scratch';
+function setTopMode(m){
+  topMode = m;
+  document.getElementById('paneScratch').style.display = (m === 'scratch') ? '' : 'none';
+  document.getElementById('paneHorizon').style.display = (m === 'horizon') ? '' : 'none';
+  document.getElementById('modeScratch').classList.toggle('active', m === 'scratch');
+  document.getElementById('modeHorizon').classList.toggle('active', m === 'horizon');
+}
+function horizonRef(){ return { id:'hz', title:'Long Horizon', cards: board.horizon, collapsed:false }; }
+function addHorizon(){
+  if (!board.horizon) board.horizon = [];
+  board.horizon.push({ id:uid('k'), text:'', notes:'', tag:'', color:'', due:null });
+  scheduleSave(); render();
+}
+function promoteToBoard(cd){
+  board.horizon = (board.horizon || []).filter(x => x !== cd);
+  const target = board.columns[0];
+  if (target){ if (target.collapsed) target.collapsed = false; target.cards.unshift(cd); }
+  scheduleSave(); render();
+}
+function horizonCardEl(cd, idx){
+  const hz = horizonRef();
+  const div = document.createElement('div');
+  div.className = 'card c-' + (idx % 5);
+  if (cd.color && COLORS.includes(cd.color)) div.classList.add('c-' + cd.color);
+
+  const grip = document.createElement('div');
+  grip.className = 'cgrip'; grip.textContent = '⠿'; grip.title = 'Drag up to a board column to start it';
+  grip.addEventListener('pointerdown', e => startDrag(e, cd, hz, div));
+  grip.addEventListener('touchstart', e => e.preventDefault(), {passive:false});
+
+  const row = document.createElement('div'); row.className = 'crow';
+  const ta = document.createElement('textarea');
+  ta.className = 'ctext'; ta.rows = 1; ta.placeholder = 'Long-horizon idea (weeks out)…'; ta.value = cd.text || '';
+  ta.oninput = ()=>{ ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; cd.text = ta.value; scheduleSave(); };
+  row.appendChild(ta);
+  requestAnimationFrame(()=>{ ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; });
+
+  const sel = document.createElement('select');
+  sel.className = 'ctagsel'; sel.title = 'Tag';
+  const o0 = document.createElement('option'); o0.value=''; o0.textContent='—'; sel.appendChild(o0);
+  (board.tags || []).forEach(t => { const o=document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o); });
+  sel.value = cd.tag || '';
+  sel.onchange = ()=>{ cd.tag = sel.value || ''; scheduleSave(); render(); };
+  row.appendChild(sel);
+
+  const meta = document.createElement('div'); meta.className = 'cmeta';
+  const left = document.createElement('span');
+  left.style.display='flex'; left.style.alignItems='center'; left.style.gap='.3rem'; left.style.flexWrap='wrap';
+  if (cd.tag) { const chip=document.createElement('span'); chip.className='tagchip'; chip.textContent=cd.tag; left.appendChild(chip); }
+  const prioW = document.createElement('span');
+  prioW.style.display='flex'; prioW.style.alignItems='center'; prioW.style.gap='.12rem';
+  const up = document.createElement('button'); up.className='prio'; up.textContent='▲'; up.title='Move up (raise priority)';
+  up.disabled = (board.horizon.indexOf(cd) === 0);
+  up.onclick = (e)=>{ e.stopPropagation(); moveCard(hz, cd, -1); };
+  const num = document.createElement('span'); num.className='colcount'; num.textContent = (board.horizon.indexOf(cd)+1);
+  const dn = document.createElement('button'); dn.className='prio'; dn.textContent='▼'; dn.title='Move down (lower priority)';
+  dn.disabled = (board.horizon.indexOf(cd) === board.horizon.length-1);
+  dn.onclick = (e)=>{ e.stopPropagation(); moveCard(hz, cd, 1); };
+  prioW.append(up, num, dn); left.appendChild(prioW);
+
+  const right = document.createElement('span');
+  right.style.display='flex'; right.style.alignItems='center'; right.style.gap='.2rem';
+  const dots = document.createElement('span'); dots.style.display='flex'; dots.style.gap='.15rem';
+  COLORS.forEach(c => {
+    const d=document.createElement('button'); d.className='dotbtn ' + (c ? 'd-'+c : 'd-yellow');
+    d.title='Sticky color' + (c ? ' '+c : ' (yellow)');
+    d.style.outline = (cd.color===c) ? '2px solid #333' : '';
+    d.onclick = ()=>{ cd.color=c; scheduleSave(); render(); };
+    dots.appendChild(d);
+  });
+  right.appendChild(dots);
+  const db = document.createElement('button'); db.className='duebtn'; db.textContent = cd.due ? '⏱' : '⏱ +';
+  db.title = cd.due ? 'Due ' + fmtDate(cd.due) + ' — click to change' : 'Set a due time';
+  db.onclick = (e)=> setDue(cd, e);
+  right.appendChild(db);
+  const promote = document.createElement('button'); promote.className='cdone'; promote.textContent='✓';
+  promote.title = 'Move to Backlog (start it)';
+  promote.onclick = (e)=>{ e.stopPropagation(); promoteToBoard(cd); };
+  right.appendChild(promote);
+  const del = document.createElement('button'); del.className='cdel'; del.textContent='✕';
+  del.onclick = ()=>{ board.horizon = board.horizon.filter(x=>x!==cd); scheduleSave(); render(); };
+  right.appendChild(del);
+  meta.append(left, right);
+
+  const nt = document.createElement('textarea');
+  nt.className='cnotes'; nt.placeholder='details…'; nt.value = cd.notes || '';
+  nt.oninput = ()=>{ cd.notes = nt.value; scheduleSave(); };
+
+  const due = document.createElement('div'); due.className='cdue'; due.dataset.card = cd.id;
+  if (cd.due){ due.style.cursor='pointer'; due.title='Click to clear due time'; due.onclick=()=>clearDue(cd); }
+  updateDueLabel(due, cd);
+
+  div.dataset.card = cd.id;
+  div.append(grip, row, meta, nt, due);
+  return div;
+}
+
 // ---------- Countdown ticker ----------
 setInterval(()=>{
   if (!board || !dragCard) {
@@ -666,7 +789,7 @@ setInterval(()=>{
 function findCard(id){
   if (!board) return null;
   for (const c of board.columns){ const f=c.cards.find(x=>x.id===id); if (f) return f; }
-  return null;
+  return (board.horizon||[]).find(x=>x.id===id) || null;
 }
 
 // ---------- Mutations ----------
