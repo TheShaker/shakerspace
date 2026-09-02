@@ -88,6 +88,11 @@ select.filter{font-family:'JetBrains Mono',monospace;font-size:.7rem;padding:.35
 .col.done .card{background:rgba(255,248,230,.4);color:rgba(43,33,25,.45);box-shadow:none;border-color:rgba(0,0,0,.06)}
 .col.done .card::before{opacity:.25}
 .col.done .card .ctext,.col.done .card .cgrip,.col.done .card .cdel,.col.done .card .cdone{color:rgba(43,33,25,.45)}
+/* Done cards: keep the delete ✕ visible — the recede fade above hides it entirely,
+   and it even won the specificity battle over .cdel:hover (so hover did nothing).
+   Give it its own hover so it reads 'like the other columns'. */
+.col.done .card .cdel{color:rgba(160,50,40,.8);opacity:.6}
+.col.done .card .cdel:hover{color:var(--err);opacity:1}
 .col.done .card .cnotes{background:rgba(0,0,0,.04);color:rgba(43,33,25,.4)}
 .cnotes{width:100%;background:rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.12);border-radius:4px;color:rgba(53,43,26,.75);font-family:'JetBrains Mono',monospace;font-size:.66rem;padding:.3rem .45rem;margin-top:.35rem;min-height:2em;resize:vertical;outline:none}
 .cnotes:focus{background:rgba(255,255,255,.4)}
@@ -510,6 +515,7 @@ function cardEl(cd, col, idx){
   }
   const del = document.createElement('button');
   del.className = 'cdel'; del.textContent = '✕';
+  del.title = inDoneCol ? 'Permanently delete card' : 'Delete card';
   del.onclick = ()=>{ col.cards = col.cards.filter(x=>x!==cd); scheduleSave(); render(); };
   right.appendChild(del);
   meta.append(left, right);
